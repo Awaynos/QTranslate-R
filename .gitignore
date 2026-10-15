@@ -1,0 +1,10 @@
+# Всё нерепозиторное: окружение, сборка, данные приложения
+_local/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Скриншоты, которые генерирует tools/screenshot.py
+tools/shots/
