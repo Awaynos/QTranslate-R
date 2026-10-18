@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="ru" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QTranslate Remake — переводчик для Windows в один хоткей</title>
+<meta name="description" content="Настольный переводчик для Windows: выдели текст и нажми Ctrl+Q. Пять сервисов сразу, словарь, озвучка, перевод документов. Без API-ключей и аккаунтов.">
+<meta name="theme-color" content="#171718">
+<link rel="canonical" href="https://awaynos.github.io/QTranslate-R/">
+<link rel="icon" href="images/app-icon.png" type="image/png">
+<link rel="apple-touch-icon" href="images/app-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="QTranslate Remake">
+<meta property="og:title" content="QTranslate Remake — переводчик для Windows в один хоткей">
+<meta property="og:description" content="Выдели текст → Ctrl+Q → перевод от пяти сервисов, не переключая окно. Бесплатно, без API-ключей.">
+<meta property="og:url" content="https://awaynos.github.io/QTranslate-R/">
+<meta property="og:image" content="https://awaynos.github.io/QTranslate-R/images/main-window.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="QTranslate Remake — переводчик для Windows">
+<meta name="twitter:description" content="Выдели текст → Ctrl+Q → перевод от пяти сервисов. Бесплатно, без ключей.">
+<meta name="twitter:image" content="https://awaynos.github.io/QTranslate-R/images/main-window.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "QTranslate Remake",
+  "operatingSystem": "Windows 10, Windows 11",
+  "applicationCategory": "UtilitiesApplication",
+  "softwareVersion": "0.1.0 Alpha",
+  "description": "Настольный переводчик для Windows с быстрым переводом по Ctrl+Q, пятью сервисами, словарём, озвучкой и переводом документов.",
+  "downloadUrl": "https://github.com/Awaynos/QTranslate-R/releases/download/v0.1.0-alpha/QTranslateRemake.exe",
+  "codeRepository": "https://github.com/Awaynos/QTranslate-R",
+  "license": "https://github.com/Awaynos/QTranslate-R/blob/main/LICENSE",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "RUB" }
+}
+</script>
+
+<style>
+  :root{
+    --bg:#171718;
+    --bg-soft:#1c1c1e;
+    --panel:#212124;
+    --panel-hi:#28282c;
+    --line:#35353a;
+    --line-soft:#2a2a2e;
+    --text:#ececee;
+    --muted:#a2a2a8;
+    --dim:#78787f;
+    --accent:#8fd6c8;
+    --accent-soft:rgba(143,214,200,.12);
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+    --radius:10px;
+    --radius-sm:7px;
+    --font:"Segoe UI Variable Display","Segoe UI",Inter,system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"Cascadia Code","Consolas","SFMono-Regular",ui-monospace,monospace;
+    --max:1120px;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:var(--font);font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(900px 500px at 50% -10%,rgba(143,214,200,.055),transparent 70%),
+      radial-gradient(700px 400px at 85% 10%,rgba(255,255,255,.03),transparent 70%);
+  }
+  img{max-width:100%;height:auto;display:block}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit}
+  ::selection{background:rgba(143,214,200,.25)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .wrap{width:100%;max-width:var(--max);margin:0 auto;padding:0 24px;position:relative;z-index:1}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+  /* ── header ───────────────────────────────────────────── */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(23,23,24,.72);
+    backdrop-filter:blur(14px) saturate(140%);
+    border-bottom:1px solid transparent;
+    transition:border-color .25s,background .25s;
+  }
+  header.stuck{border-bottom-color:var(--line-soft);background:rgba(23,23,24,.9)}
+  .nav{display:flex;align-items:center;gap:28px;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:650;letter-spacing:-.01em;white-space:nowrap}
+  .brand img{width:26px;height:26px;border-radius:6px}
+  .brand small{color:var(--dim);font-weight:500;font-size:12px;letter-spacing:.02em}
+  .nav-links{display:flex;gap:4px;margin-left:auto}
+  .nav-links a{
+    padding:7px 11px;border-radius:6px;font-size:14px;color:var(--muted);
+    transition:color .18s,background .18s;
+  }
+  .nav-links a:hover{color:var(--text);background:rgba(255,255,255,.05)}
+  .nav-cta{display:flex;align-items:center;gap:8px}
+  .icon-btn{
+    display:grid;place-items:center;width:36px;height:36px;border-radius:7px;
+    border:1px solid var(--line);background:var(--panel);color:var(--muted);
+    transition:color .18s,border-color .18s,background .18s;
+  }
+  .icon-btn:hover{color:var(--text);border-color:#4a4a50;background:var(--panel-hi)}
+  .menu-btn{display:none}
+
+  /* ── buttons ──────────────────────────────────────────── */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    height:44px;padding:0 20px;border-radius:var(--radius-sm);
+    font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;
+    border:1px solid transparent;cursor:pointer;
+    transition:transform .16s,background .18s,border-color .18s,box-shadow .18s,color .18s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{
+    background:linear-gradient(180deg,#f4f4f5,#c9c9cd);
+    color:#141415;border-color:#d8d8dc;
+    box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 6px 18px rgba(0,0,0,.3);
+  }
+  .btn-primary:hover{background:linear-gradient(180deg,#fff,#dcdce0);box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 8px 26px rgba(0,0,0,.42)}
+  .btn-ghost{background:var(--panel);border-color:var(--line);color:var(--text)}
+  .btn-ghost:hover{background:var(--panel-hi);border-color:#47474d}
+  .btn svg{flex:none}
+
+  /* ── hero ─────────────────────────────────────────────── */
+  .hero{padding:72px 0 24px;text-align:center}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:5px 12px 5px 8px;border:1px solid var(--line);border-radius:999px;
+    background:var(--panel);color:var(--muted);font-size:12.5px;letter-spacing:.01em;
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+  .badge b{color:var(--text);font-weight:600}
+  h1{
+    margin:22px auto 0;max-width:820px;
+    font-size:clamp(34px,6.2vw,64px);line-height:1.05;
+    font-weight:700;letter-spacing:-.035em;
+  }
+  h1 .grad{
+    background:linear-gradient(180deg,#fff 10%,#a8a8ae 130%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lede{margin:20px auto 0;max-width:620px;color:var(--muted);font-size:clamp(16px,1.6vw,18.5px)}
+  .lede kbd{
+    font-family:var(--mono);font-size:.88em;padding:2px 6px;border-radius:5px;
+    border:1px solid var(--line);background:var(--panel-hi);color:var(--text);
+    box-shadow:0 1px 0 rgba(0,0,0,.4) inset;
+  }
+  .cta{margin:30px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+  .cta .btn-primary{height:50px;padding:0 26px;font-size:15.5px}
+  .cta .btn-ghost{height:50px;padding:0 22px}
+  .meta{
+    margin:14px 0 0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;
+    color:var(--dim);font-size:13px;
+  }
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+  .meta i{width:3px;height:3px;border-radius:50%;background:#4a4a50;display:inline-block}
+  .warn{
+    margin:26px auto 0;max-width:660px;padding:11px 15px;
+    border:1px solid var(--line-soft);border-radius:8px;background:rgba(255,255,255,.022);
+    color:var(--dim);font-size:13px;line-height:1.55;text-align:left;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .warn svg{flex:none;margin-top:2px;color:var(--muted)}
+
+  /* ── hero shot ────────────────────────────────────────── */
+  .shot-hero{margin:44px 0 0;position:relative}
+  .shot{
+    position:relative;border:1px solid var(--line);border-radius:var(--radius);
+    background:linear-gradient(180deg,#26262a,#1d1d20);
+    padding:6px;box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .shot img{border-radius:6px;width:100%}
+  .shot::after{
+    content:"";position:absolute;inset:0;border-radius:var(--radius);pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),transparent 22%);
+  }
+  .float-popup{
+    position:absolute;right:-14px;bottom:-34px;width:min(300px,42%);
+    border:1px solid #4a4a50;border-radius:8px;overflow:hidden;
+    box-shadow:0 24px 50px rgba(0,0,0,.6);
+    animation:float 7s ease-in-out infinite;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+  /* ── stats ────────────────────────────────────────────── */
+  .stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    margin:76px 0 0;border:1px solid var(--line-soft);border-radius:var(--radius);
+    background:var(--line-soft);overflow:hidden;
+  }
+  .stat{background:var(--bg-soft);padding:22px 18px;text-align:center}
+  .stat b{display:block;font-size:clamp(22px,3vw,30px);font-weight:700;letter-spacing:-.03em;line-height:1.1}
+  .stat span{display:block;margin-top:6px;color:var(--dim);font-size:12.5px;letter-spacing:.02em}
+
+  /* ── sections ─────────────────────────────────────────── */
+  section{padding:88px 0 0}
+  .eyebrow{
+    display:flex;align-items:center;gap:10px;
+    color:var(--accent);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  }
+  .eyebrow::before{content:"";width:18px;height:1px;background:currentColor;opacity:.6}
+  h2{margin:12px 0 0;font-size:clamp(26px,3.6vw,40px);line-height:1.15;font-weight:680;letter-spacing:-.03em}
+  .sub{margin:14px 0 0;max-width:640px;color:var(--muted);font-size:16px}
+
+  /* ── features bento ───────────────────────────────────── */
+  .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:34px}
+  .card{
+    grid-column:span 2;position:relative;
+    border:1px solid var(--line-soft);border-radius:var(--radius);
+    background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.008));
+    padding:22px;overflow:hidden;
+    transition:border-color .22s,transform .22s,background .22s;
+  }
+  .card:hover{border-color:#43434a;transform:translateY(-2px);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012))}
+  .card.w3{grid-column:span 3}
+  .card.w2{grid-column:span 2}
+  .card .ico{
+    display:grid;place-items:center;width:36px;height:36px;border-radius:8px;
+    border:1px solid var(--line);background:var(--panel);color:var(--muted);
+    margin-bottom:14px;
+  }
+  .card h3{margin:0;font-size:16.5px;font-weight:640;letter-spacing:-.015em}
+  .card p{margin:7px 0 0;color:var(--muted);font-size:14px;line-height:1.55}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .chip{
+    padding:4px 9px;border-radius:6px;border:1px solid var(--line);
+    background:var(--panel);font-size:12px;color:var(--muted);letter-spacing:.01em;
+  }
+  .chip.on{border-color:rgba(143,214,200,.35);background:var(--accent-soft);color:#cdeee7}
+  .keys{display:flex;gap:8px;margin-top:16px}
+  kbd.key{
+    font-family:var(--mono);font-size:12.5px;padding:6px 10px;border-radius:6px;
+    border:1px solid #45454c;border-bottom-width:2px;background:linear-gradient(180deg,#2e2e33,#242428);
+    color:#e6e6e8;box-shadow:0 1px 0 rgba(255,255,255,.06) inset;
+  }
+
+  /* ── steps ────────────────────────────────────────────── */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px;counter-reset:s}
+  .step{
+    position:relative;border:1px solid var(--line-soft);border-radius:var(--radius);
+    background:var(--bg-soft);padding:22px 22px 24px;
+  }
+  .step .num{
+    font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.08em;
+    display:flex;align-items:center;gap:10px;
+  }
+  .step .num::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,rgba(143,214,200,.35),transparent)}
+  .step h3{margin:14px 0 0;font-size:16px;font-weight:620}
+  .step p{margin:6px 0 0;color:var(--muted);font-size:14px}
+
+  /* ── gallery ──────────────────────────────────────────── */
+  .gallery{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:34px}
+  .gallery figure{
+    margin:0;border:1px solid var(--line-soft);border-radius:var(--radius);
+    background:var(--bg-soft);padding:8px;overflow:hidden;cursor:zoom-in;
+    transition:border-color .22s,transform .22s;
+  }
+  .gallery figure:hover{border-color:#43434a;transform:translateY(-2px)}
+  .gallery img{width:100%;border-radius:6px}
+  .gallery figcaption{padding:10px 6px 4px;color:var(--dim);font-size:12.5px;text-align:center}
+  .gallery .wide{grid-column:1/-1}
+
+  /* ── install ──────────────────────────────────────────── */
+  .install{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;margin-top:34px;align-items:start}
+  .panel{
+    border:1px solid var(--line-soft);border-radius:var(--radius);
+    background:var(--bg-soft);padding:26px;
+  }
+  .panel h3{margin:0;font-size:19px;font-weight:650;letter-spacing:-.02em}
+  .panel .hint{margin:8px 0 0;color:var(--muted);font-size:14px}
+  .dl{display:flex;align-items:center;gap:14px;margin-top:20px;flex-wrap:wrap}
+  .dl small{display:block;color:var(--dim);font-size:12.5px;margin-top:9px}
+  .file{
+    display:flex;align-items:center;gap:12px;margin-top:18px;padding:12px 14px;
+    border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  }
+  .file svg{flex:none;color:var(--muted)}
+  .file .nm{font-family:var(--mono);font-size:12.5px;color:var(--text)}
+  .file .sz{margin-left:auto;color:var(--dim);font-size:12px;white-space:nowrap}
+  pre{
+    margin:18px 0 0;position:relative;border:1px solid var(--line);border-radius:8px;
+    background:#141415;padding:16px 16px;overflow:auto;
+  }
+  pre code{font-family:var(--mono);font-size:12.5px;line-height:1.75;color:#c9c9ce;white-space:pre}
+  pre .c{color:#6d6d75}
+  .copy{
+    position:absolute;top:8px;right:8px;height:28px;padding:0 10px;
+    display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--line);border-radius:5px;background:var(--panel);
+    color:var(--muted);font-size:11.5px;cursor:pointer;transition:.16s;
+  }
+  .copy:hover{color:var(--text);background:var(--panel-hi)}
+  .copy.ok{color:#b6e8dd;border-color:rgba(143,214,200,.4);background:var(--accent-soft)}
+  .req{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:9px}
+  .req li{display:flex;gap:9px;color:var(--muted);font-size:13.5px}
+  .req svg{flex:none;margin-top:3px;color:var(--accent);opacity:.8}
+  details{margin-top:16px;border-top:1px solid var(--line-soft);padding-top:14px}
+  summary{cursor:pointer;color:var(--muted);font-size:13.5px;list-style:none;display:flex;align-items:center;gap:8px}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+";display:grid;place-items:center;width:18px;height:18px;border:1px solid var(--line);border-radius:4px;font-size:12px;line-height:1;color:var(--dim)}
+  details[open] summary::before{content:"−"}
+  details p{margin:10px 0 0;color:var(--dim);font-size:12.5px}
+  details code{font-family:var(--mono);font-size:11.5px;word-break:break-all;color:#b9b9be}
+
+  /* ── privacy strip ────────────────────────────────────── */
+  .strip{
+    margin-top:14px;display:flex;align-items:center;gap:16px;
+    border:1px solid var(--line-soft);border-radius:var(--radius);
+    background:linear-gradient(90deg,rgba(143,214,200,.06),rgba(255,255,255,.012) 45%);
+    padding:20px 22px;
+  }
+  .strip .ico{display:grid;place-items:center;width:38px;height:38px;border-radius:8px;border:1px solid rgba(143,214,200,.25);background:var(--accent-soft);color:var(--accent);flex:none}
+  .strip p{margin:0;font-size:14px;color:var(--muted)}
+  .strip b{color:var(--text);font-weight:600}
+
+  /* ── support ──────────────────────────────────────────── */
+  .coins{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:34px}
+  .coin{
+    border:1px solid var(--line-soft);border-radius:var(--radius);background:var(--bg-soft);
+    padding:18px 18px 16px;
+  }
+  .coin .top{display:flex;align-items:baseline;gap:9px}
+  .coin .sym{font-weight:650;font-size:14.5px;letter-spacing:-.01em}
+  .coin .net{color:var(--dim);font-size:12px}
+  .addr{
+    display:flex;align-items:center;gap:8px;margin-top:12px;
+  }
+  .addr code{
+    flex:1;min-width:0;font-family:var(--mono);font-size:11.5px;line-height:1.5;
+    color:#b9b9be;background:#141415;border:1px solid var(--line-soft);border-radius:6px;
+    padding:8px 10px;overflow-wrap:anywhere;
+  }
+  .note{margin:16px 0 0;color:var(--dim);font-size:12.5px;text-align:center}
+
+  /* ── footer ───────────────────────────────────────────── */
+  footer{margin-top:96px;border-top:1px solid var(--line-soft);padding:34px 0 44px}
+  .foot{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;justify-content:space-between}
+  .foot .brand{font-size:14px}
+  .foot nav{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13.5px;color:var(--muted)}
+  .foot nav a:hover{color:var(--text)}
+  .legal{margin:26px 0 0;padding-top:18px;border-top:1px solid var(--line-soft);color:var(--dim);font-size:12.5px;display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between}
+  .legal a{color:var(--muted);text-decoration:underline;text-decoration-color:#45454c;text-underline-offset:3px}
+  .legal a:hover{color:var(--text)}
+
+  /* ── toast / lightbox ─────────────────────────────────── */
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,16px);
+    background:#2b2b30;border:1px solid #46464d;border-radius:8px;
+    padding:10px 16px;font-size:13.5px;box-shadow:0 12px 30px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:90;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .lightbox{
+    position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:28px;
+    background:rgba(10,10,11,.9);backdrop-filter:blur(6px);
+    opacity:0;pointer-events:none;transition:opacity .2s;
+  }
+  .lightbox.open{opacity:1;pointer-events:auto}
+  .lightbox img{max-width:min(1100px,94vw);max-height:88vh;width:auto;border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow)}
+  .lightbox .x{
+    position:absolute;top:18px;right:18px;width:38px;height:38px;border-radius:8px;
+    background:var(--panel);border:1px solid var(--line);color:var(--muted);
+    display:grid;place-items:center;cursor:pointer;font-size:20px;line-height:1;
+  }
+  .lightbox .x:hover{color:var(--text);background:var(--panel-hi)}
+
+  /* ── reveal ───────────────────────────────────────────── */
+  .js .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1)}
+  .js .reveal.in{opacity:1;transform:none}
+
+  /* ── responsive ───────────────────────────────────────── */
+  @media (max-width:980px){
+    .float-popup{display:none}
+    .install{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:820px){
+    .nav-links{
+      display:none;position:absolute;top:64px;left:0;right:0;
+      flex-direction:column;gap:2px;padding:10px 16px 16px;
+      background:rgba(23,23,24,.98);border-bottom:1px solid var(--line);
+    }
+    .nav-links.open{display:flex}
+    .nav-links a{padding:10px}
+    .menu-btn{display:grid}
+    .nav-cta .btn{display:none}
+    .hero{padding-top:52px}
+    .bento{grid-template-columns:repeat(2,1fr)}
+    .card,.card.w3,.card.w2{grid-column:span 1}
+    .steps{grid-template-columns:1fr}
+    .gallery{grid-template-columns:1fr}
+    .coins{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 18px}
+    section{padding-top:64px}
+    .bento{grid-template-columns:1fr}
+    .card{grid-column:span 1 !important}
+    .hero{padding-top:40px}
+    .cta .btn{width:100%}
+    .strip{flex-direction:column;align-items:flex-start;gap:12px}
+    .foot{flex-direction:column;gap:18px}
+    .stats{grid-template-columns:1fr 1fr}
+    .stat{padding:18px 12px}
+    .panel{padding:20px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none !important;transition:none !important}
+    .js .reveal{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<header id="top">
+  <div class="wrap">
+    <nav class="nav" aria-label="Основная навигация">
+      <a class="brand" href="#top">
+        <img src="images/app-icon.png" alt="" width="26" height="26">
+        QTranslate <small>Remake</small>
+      </a>
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Меню" aria-expanded="false" aria-controls="navLinks">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="#features">Возможности</a>
+        <a href="#how">Как работает</a>
+        <a href="#screens">Скриншоты</a>
+        <a href="#install">Установка</a>
+        <a href="#support">Поддержать</a>
+      </div>
+      <div class="nav-cta">
+        <a class="icon-btn" href="https://github.com/Awaynos/QTranslate-R" aria-label="GitHub" title="GitHub">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+        </a>
+        <a class="btn btn-primary" href="https://github.com/Awaynos/QTranslate-R/releases/download/v0.1.0-alpha/QTranslateRemake.exe">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>
+          Скачать
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <div class="wrap hero">
+    <div class="badge reveal"><span class="dot"></span> <b>0.1.0 Alpha</b> · Windows 10/11</div>
+    <h1 class="reveal"><span class="grad">Перевод, который<br>всегда под рукой</span></h1>
+    <p class="lede reveal">
+      Настольный переводчик в духе QTranslate 6.10. Выделил текст — нажал
+      <kbd>Ctrl</kbd>+<kbd>Q</kbd> — понял. Пять сервисов сразу, без API-ключей
+      и без переключения окон.
+    </p>
+
+    <div class="cta reveal">
+      <a class="btn btn-primary" href="https://github.com/Awaynos/QTranslate-R/releases/download/v0.1.0-alpha/QTranslateRemake.exe">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>
+        Скачать для Windows
+      </a>
+      <a class="btn btn-ghost" href="https://github.com/Awaynos/QTranslate-R">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+        Исходный код
+      </a>
+    </div>
+
+    <div class="meta reveal">
+      <span>44,7 МБ</span><i></i>
+      <span>.exe · без установки</span><i></i>
+      <span>Python не нужен</span><i></i>
+      <span>Бесплатно</span>
+    </div>
+
+    <div class="warn reveal">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 8v5M12 16.5v.5"/><circle cx="12" cy="12" r="9"/></svg>
+      <span>Файл не подписан, поэтому Windows покажет «Неизвестный издатель». Нажми «Подробнее» → «Выполнить в любом случае». Это нормально для Alpha.</span>
+    </div>
+
+    <div class="shot-hero reveal">
+      <div class="shot">
+        <img src="images/main-window.png" width="1038" height="878" alt="Главное окно QTranslate Remake: несколько переводчиков и панель обратного перевода" fetchpriority="high">
+      </div>
+      <img class="float-popup" src="images/quick-popup.png" alt="Быстрый перевод по Ctrl+Q" loading="lazy">
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="wrap">
+    <div class="stats reveal">
+      <div class="stat"><b>5</b><span>переводчиков сразу</span></div>
+      <div class="stat"><b>4</b><span>темы оформления</span></div>
+      <div class="stat"><b>0</b><span>API-ключей</span></div>
+      <div class="stat"><b>100%</b><span>данные локально</span></div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="wrap">
+      <div class="eyebrow reveal">Возможности</div>
+      <h2 class="reveal">Всё, что нужно от переводчика.<br>И ничего лишнего.</h2>
+      <p class="sub reveal">Никаких нейросетей, суммаризации и аккаунтов. Только перевод, словарь, озвучка и документы.</p>
+
+      <div class="bento">
+        <article class="card w3 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+          </div>
+          <h3>Пять переводчиков — один клик</h3>
+          <p>Каждый сервис отвечает отдельной карточкой: видно, кто как понял текст, и сколько это заняло миллисекунд.</p>
+          <div class="chips">
+            <span class="chip on">Google</span>
+            <span class="chip on">Yandex</span>
+            <span class="chip on">Reverso</span>
+            <span class="chip on">MyMemory</span>
+            <span class="chip on">LibreTranslate</span>
+          </div>
+        </article>
+
+        <article class="card w3 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></svg>
+          </div>
+          <h3>Ctrl+Q — и перевод у курсора</h3>
+          <p>Выдели текст в любом приложении — попап появится рядом с курсором и закроется, когда кликнешь мимо.</p>
+          <div class="keys">
+            <kbd class="key">Ctrl</kbd><kbd class="key">Q</kbd>
+          </div>
+        </article>
+
+        <article class="card w2 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg>
+          </div>
+          <h3>Ctrl+1 — замена на месте</h3>
+          <p>Перевод вставляется прямо вместо выделенного текста — в том приложении, где ты работаешь.</p>
+        </article>
+
+        <article class="card w2 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/></svg>
+          </div>
+          <h3>Авто-пара языков</h3>
+          <p>Пишешь по-русски — получаешь английский. Пишешь по-английски — получаешь русский. Без переключений.</p>
+        </article>
+
+        <article class="card w2 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5M16 13H8M16 17H8M10 9H8"/></svg>
+          </div>
+          <h3>Документы</h3>
+          <p>TXT, SRT, VTT, DOCX и PDF. Субтитры сохраняют тайминги, DOCX — абзацы и таблицы. Есть прогресс и отмена.</p>
+        </article>
+
+        <article class="card w2 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+          </div>
+          <h3>Словарь</h3>
+          <p>Wiktionary через официальный API или свой CSV-файл: глоссарий, аббревиатуры, коды ошибок.</p>
+        </article>
+
+        <article class="card w2 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+          </div>
+          <h3>Озвучка</h3>
+          <p>Системный голос Windows (SAPI) или Google TTS — с горячей клавишей Ctrl+E.</p>
+        </article>
+
+        <article class="card w2 reveal">
+          <div class="ico">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".8"/><circle cx="17.5" cy="10.5" r=".8"/><circle cx="8.5" cy="7.5" r=".8"/><circle cx="6.5" cy="12.5" r=".8"/><path d="M12 2a10 10 0 1 0 0 20 1 1 0 0 0 0-20Z"/></svg>
+          </div>
+          <h3>Темы и трей</h3>
+          <p>Металл, Бирюза, Бронза и Светлая. Своё окно без системной рамки, сворачивание в трей.</p>
+        </article>
+      </div>
+
+      <div class="strip reveal">
+        <div class="ico">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <p><b>Настройки и история остаются на твоём компьютере.</b> Они лежат в <code>%APPDATA%\QTranslate Remake</code> и никуда не отправляются.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section id="how">
+    <div class="wrap">
+      <div class="eyebrow reveal">Как это работает</div>
+      <h2 class="reveal">Три движения — и готово</h2>
+      <div class="steps">
+        <div class="step reveal"><div class="num">01</div><h3>Выдели текст</h3><p>В браузере, Word, Telegram, игре — где угодно.</p></div>
+        <div class="step reveal"><div class="num">02</div><h3>Нажми Ctrl+Q</h3><p>Перевод появится у курсора. Хоткей можно переназначить.</p></div>
+        <div class="step reveal"><div class="num">03</div><h3>Читай и копируй</h3><p>Пять вариантов перевода — выбирай лучший, озвучивай, смотри историю.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENS -->
+  <section id="screens">
+    <div class="wrap">
+      <div class="eyebrow reveal">Интерфейс</div>
+      <h2 class="reveal">Один и тот же проект — под свой вкус</h2>
+      <p class="sub reveal">Нажми на картинку, чтобы открыть её целиком.</p>
+
+      <div class="gallery">
+        <figure class="reveal wide">
+          <img src="images/main-window.png" alt="Главное окно с результатами перевода" loading="lazy">
+          <figcaption>Главное окно: несколько переводчиков сразу, авто-пара и обратный перевод</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="images/quick-popup.png" alt="Всплывающее окно быстрого перевода" loading="lazy">
+          <figcaption>Быстрый перевод по Ctrl+Q</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="images/dictionary.png" alt="Панель словаря" loading="lazy">
+          <figcaption>Словарь: Wiktionary или свой CSV</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="images/settings-services.png" alt="Настройки сервисов" loading="lazy">
+          <figcaption>Сервисы: озвучка, словарь, LibreTranslate</figcaption>
+        </figure>
+        <figure class="reveal">
+          <img src="images/settings-keyboard.png" alt="Настройка горячих клавиш" loading="lazy">
+          <figcaption>Хоткеи: запись комбинации и область действия</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section id="install">
+    <div class="wrap">
+      <div class="eyebrow reveal">Установка</div>
+      <h2 class="reveal">Запуск за минуту</h2>
+      <p class="sub reveal">Только Windows 10 и 11. Python нужен, если запускаешь из исходников.</p>
+
+      <div class="install">
+        <div class="panel reveal">
+          <h3>Готовый .exe</h3>
+          <p class="hint">Скачай и запусти — ничего устанавливать не нужно.</p>
+          <div class="dl">
+            <a class="btn btn-primary" href="https://github.com/Awaynos/QTranslate-R/releases/download/v0.1.0-alpha/QTranslateRemake.exe">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M4 20h16"/></svg>
+              Скачать 0.1.0 Alpha
+            </a>
+          </div>
+          <div class="file">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5"/></svg>
+            <span class="nm">QTranslateRemake.exe</span>
+            <span class="sz">44,7 МБ</span>
+          </div>
+          <details>
+            <summary>Контрольная сумма SHA-256</summary>
+            <p><code>AD89254D40CEB40A019C11547EF1A06C1376B9CB8881D4FA71813981B2C1D15D</code></p>
+          </details>
+        </div>
+
+        <div class="panel reveal">
+          <h3>Из исходников</h3>
+          <p class="hint">Нужен Python 3.11+. Настройки и история будут лежать в <code>_local\data</code>.</p>
+<pre><button class="copy" data-copy="git clone https://github.com/Awaynos/QTranslate-R.git
+cd QTranslate-R
+python -m venv _local\.venv
+&amp; &quot;_local\.venv\Scripts\python.exe&quot; -m pip install -r requirements.txt
+&amp; &quot;_local\.venv\Scripts\python.exe&quot; run.py" aria-label="Скопировать команды"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button><code><span class="c"># PowerShell</span>
+git clone https://github.com/Awaynos/QTranslate-R.git
+cd QTranslate-R
+python -m venv _local\.venv
+&amp; "_local\.venv\Scripts\python.exe" -m pip install -r requirements.txt
+&amp; "_local\.venv\Scripts\python.exe" run.py</code></pre>
+          <ul class="req">
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Windows 10/11, x64</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Python 3.11+ — только для запуска из исходников</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Интернет — для переводчиков и Wiktionary</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section id="support">
+    <div class="wrap">
+      <div class="eyebrow reveal">Поддержать</div>
+      <h2 class="reveal">Проект живёт на энтузиазме</h2>
+      <p class="sub reveal">
+        Помочь можно и без денег: сообщить о баге, предложить идею, перевести интерфейс или просто поставить звезду.
+        Но если хочется — вот реквизиты.
+      </p>
+
+      <div class="coins">
+        <div class="coin reveal">
+          <div class="top"><span class="sym">Bitcoin</span><span class="net">BTC · SegWit</span></div>
+          <div class="addr"><code>bc1qfaylkgnwct052snamqmnxl3uk26xpt5jg344fs</code><button class="copy" data-copy="bc1qfaylkgnwct052snamqmnxl3uk26xpt5jg344fs" aria-label="Скопировать адрес Bitcoin">Копировать</button></div>
+        </div>
+        <div class="coin reveal">
+          <div class="top"><span class="sym">Ethereum</span><span class="net">ETH · ERC-20</span></div>
+          <div class="addr"><code>0x44628629c1C6f8E8591d4f93735Ff6CD70DC8AfC</code><button class="copy" data-copy="0x44628629c1C6f8E8591d4f93735Ff6CD70DC8AfC" aria-label="Скопировать адрес Ethereum">Копировать</button></div>
+        </div>
+        <div class="coin reveal">
+          <div class="top"><span class="sym">Tether</span><span class="net">USDT · BEP-20</span></div>
+          <div class="addr"><code>0x44628629c1C6f8E8591d4f93735Ff6CD70DC8AfC</code><button class="copy" data-copy="0x44628629c1C6f8E8591d4f93735Ff6CD70DC8AfC" aria-label="Скопировать адрес USDT">Копировать</button></div>
+        </div>
+        <div class="coin reveal">
+          <div class="top"><span class="sym">Solana</span><span class="net">SOL / SPL</span></div>
+          <div class="addr"><code>3sTNRxJqATsJsKWyM5dxi4HHMLEKbp8f8dGU4wJ1xmE9</code><button class="copy" data-copy="3sTNRxJqATsJsKWyM5dxi4HHMLEKbp8f8dGU4wJ1xmE9" aria-label="Скопировать адрес Solana">Копировать</button></div>
+        </div>
+      </div>
+      <p class="note">Отправляй перевод только в указанной сети — иначе средства могут потеряться.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <a class="brand" href="#top">
+        <img src="images/app-icon.png" alt="" width="26" height="26" loading="lazy">
+        QTranslate <small>Remake</small>
+      </a>
+      <nav aria-label="Ссылки в подвале">
+        <a href="https://github.com/Awaynos/QTranslate-R">GitHub</a>
+        <a href="https://github.com/Awaynos/QTranslate-R/releases">Релизы</a>
+        <a href="https://github.com/Awaynos/QTranslate-R/issues">Issues</a>
+        <a href="https://github.com/Awaynos/QTranslate-R/blob/main/README.en.md">English</a>
+      </nav>
+    </div>
+    <div class="legal">
+      <span>© <span id="year">2026</span> Awaynos · QTranslate Remake 0.1.0 Alpha</span>
+      <span>Лицензия <a href="https://github.com/Awaynos/QTranslate-R/blob/main/LICENSE">PolyForm Noncommercial 1.0.0</a> · source-available, не open source</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">Скопировано</div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр изображения">
+  <button class="x" id="lbClose" aria-label="Закрыть">×</button>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<script>
+(function(){
+  document.documentElement.classList.remove('no-js');
+  document.documentElement.classList.add('js');
+
+  var header = document.getElementById('top');
+  var onScroll = function(){ header.classList.toggle('stuck', window.scrollY > 8); };
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  var menuBtn = document.getElementById('menuBtn');
+  var navLinks = document.getElementById('navLinks');
+  menuBtn.addEventListener('click', function(){
+    var open = navLinks.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  navLinks.addEventListener('click', function(e){
+    if (e.target.tagName === 'A') {
+      navLinks.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded','false');
+    }
+  });
+
+  var toast = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 1800);
+  }
+  function copyText(text){
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function(resolve, reject){
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly','');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy') ? resolve() : reject(); }
+      catch(e){ reject(e); }
+      document.body.removeChild(ta);
+    });
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('.copy');
+    if (!btn) return;
+    e.preventDefault();
+    copyText(btn.dataset.copy || '').then(function(){
+      var old = btn.innerHTML;
+      btn.classList.add('ok');
+      btn.innerHTML = 'Скопировано';
+      showToast(btn.dataset.copy.length > 40 ? 'Адрес скопирован' : 'Скопировано');
+      setTimeout(function(){ btn.classList.remove('ok'); btn.innerHTML = old; }, 1600);
+    }).catch(function(){ showToast('Не удалось скопировать'); });
+  });
+
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lbImg');
+  var lbClose = document.getElementById('lbClose');
+  var lastFocus = null;
+  function openLb(img){
+    lastFocus = document.activeElement;
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt;
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    lbClose.focus();
+  }
+  function closeLb(){
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    if (lastFocus) lastFocus.focus();
+  }
+  document.querySelectorAll('.gallery img').forEach(function(img){
+    img.parentElement.addEventListener('click', function(){ openLb(img); });
+  });
+  lbClose.addEventListener('click', closeLb);
+  lb.addEventListener('click', function(e){ if (e.target === lb) closeLb(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && lb.classList.contains('open')) closeLb();
+  });
+
+  var year = document.getElementById('year');
+  if (year) year.textContent = new Date().getFullYear();
+
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:0.05});
+    reveals.forEach(function(el){ io.observe(el); });
+  } else {
+    reveals.forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+</body>
+</html>
