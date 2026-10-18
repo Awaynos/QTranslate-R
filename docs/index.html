@@ -78,6 +78,10 @@
   :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
   .wrap{width:100%;max-width:var(--max);margin:0 auto;padding:0 24px;position:relative;z-index:1}
   .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  /* grid/flex items must be allowed to shrink, otherwise long code lines
+     (the install block) widen the whole document on narrow screens */
+  .bento>*,.steps>*,.coins>*,.stats>*,.gallery>*,.install>*{min-width:0}
+  pre{max-width:100%}
 
   /* ── header ───────────────────────────────────────────── */
   header{
