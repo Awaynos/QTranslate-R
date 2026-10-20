@@ -10,6 +10,8 @@
 
 **Русский** · [English](README.en.md)
 
+**Экосистема:** [QMessages](https://github.com/Awaynos/QMessages) — быстрые заготовки для переписки.
+
 ![Версия](https://img.shields.io/badge/версия-0.1.0_Alpha-9c9c9c?style=flat-square)
 ![Лицензия](https://img.shields.io/badge/лицензия-PolyForm_Noncommercial-8f8f8f?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11-4b8bbe?style=flat-square&logo=python&logoColor=white)

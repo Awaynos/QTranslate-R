@@ -10,6 +10,8 @@ Select text → press `Ctrl+Q` → understand it without switching windows.
 
 [Русский](README.md) · **English**
 
+**Ecosystem:** [QMessages](https://github.com/Awaynos/QMessages) — quick message snippets.
+
 ![Version](https://img.shields.io/badge/version-0.1.0_Alpha-9c9c9c?style=flat-square)
 ![License](https://img.shields.io/badge/license-PolyForm_Noncommercial-8f8f8f?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11-4b8bbe?style=flat-square&logo=python&logoColor=white)
