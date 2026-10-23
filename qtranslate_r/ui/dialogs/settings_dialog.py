@@ -156,7 +156,7 @@ class SettingsDialog(QDialog):
         self._language = QComboBox()
         self._language.addItem(tr("settings.language.system"), "")
         for code in available_languages():
-            self._language.addItem(code, code)
+            self._language.addItem(code[:1].upper() + code[1:], code)
         index = self._language.findData(settings.interface_language)
         if index >= 0:
             self._language.setCurrentIndex(index)

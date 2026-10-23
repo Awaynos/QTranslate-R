@@ -81,7 +81,7 @@ Subtitles keep their timings, DOCX keeps paragraphs and tables, PDF is returned 
 - **Four themes:** Metal, Turquoise, Bronze, Light. Default — Metal, font size 10.
 - **A loading indicator with the logo** — a ring at the cursor and a bar in the status bar.
 - **Tray**: minimising sends the window to the tray, a double click brings it back.
-- **Localisation**: Russian and English; the interface language is chosen in settings.
+- **Localisation**: Russian, English, German, French and Chinese; the interface language is chosen in settings.
 
 ### What is remembered
 
@@ -189,7 +189,7 @@ qtranslate_r/
   core/         translation orchestration, history, documents, service setup
   config/       settings and data paths
   platform/     Windows integrations: global hotkeys, selection capture
-  localization/ interface strings (ru/en)
+  localization/ interface strings (ru/en/de/fr/zh)
   ui/           PySide6: window, dialogs, themes, icons, indicators
   quick.py      quick translate on Ctrl+Q
   inline.py     replace the selection on Ctrl+1
