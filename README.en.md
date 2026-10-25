@@ -43,7 +43,7 @@ There are **no AI features inside**: no summarisation, no rewriting, no calls to
 
 | | |
 |---|---|
-| **Several translators at once** | Google, Yandex, Reverso, MyMemory, LibreTranslate — each result in its own card |
+| **Several translators at once** | Google, Bing, DeepL, Yandex, Reverso, MyMemory, LibreTranslate — each result in its own card |
 | **Automatic language detection** | If a service cannot detect the language itself, it receives the one found by another service |
 | **“Native–Second” auto pair** | Type in Russian — get English; type in English — get Russian. No switching |
 | **Translate as you type** | With a configurable delay |
@@ -57,6 +57,7 @@ There are **no AI features inside**: no summarisation, no rewriting, no calls to
 |---|---|
 | **`Ctrl+Q`** | Quick translate of the selection — a popup next to the cursor that closes on an outside click |
 | **`Ctrl+1`** | **Replace the selected text with its translation** — right in the app you are working in |
+| **`Ctrl+I`** | **Recognise text from the screen**: select an area — the text goes into the input field and is translated |
 | **`Ctrl+E`** | Read the selection or the result aloud |
 | **`Ctrl+D`** | Dictionary for a word |
 | **`Ctrl+Shift+D`** | Translate a document |
@@ -68,7 +69,7 @@ There are **no AI features inside**: no summarisation, no rewriting, no calls to
 |---|---|
 | **Speech** | System engine (Windows SAPI) and Google TTS |
 | **Dictionary** | Wiktionary (official MediaWiki API) and **your own CSV dictionary** — a glossary, abbreviations, error codes |
-| **No API keys** | Every built-in translator works without a key. LibreTranslate can point at your own server |
+| **No API keys** | Google, Bing, DeepL (free web endpoint), Yandex, Reverso and MyMemory work without a key. DeepL can use its official API with a key, LibreTranslate can point at your own server |
 
 ### Documents
 
@@ -81,7 +82,9 @@ Subtitles keep their timings, DOCX keeps paragraphs and tables, PDF is returned 
 - **Four themes:** Metal, Turquoise, Bronze, Light. Default — Metal, font size 10.
 - **A loading indicator with the logo** — a ring at the cursor and a bar in the status bar.
 - **Tray**: minimising sends the window to the tray, a double click brings it back.
-- **Localisation**: Russian, English, German, French and Chinese; the interface language is chosen in settings.
+- **Screen text recognition** — `Ctrl+I`: select an area, the built-in Windows OCR returns the text, and it is translated right away.
+- **Spell checking** — wavy underlines and suggestions on right click; dictionaries come from Windows.
+- **Localisation**: Russian, English, German, French, Chinese, Japanese, Kazakh and Georgian; the interface language is chosen in settings.
 
 ### What is remembered
 
@@ -126,6 +129,7 @@ user profile — `%APPDATA%\QTranslate Remake`.
 |---|---|
 | `Ctrl+Q` | Quick translate of the selection |
 | `Ctrl+1` | Replace the selected text with its translation |
+| `Ctrl+I` | Recognise text from the screen |
 | `Ctrl+E` | Read aloud |
 | `Ctrl+D` | Dictionary |
 | `Ctrl+Enter` | Translate |
@@ -144,10 +148,10 @@ All of them can be changed in **Settings → Keyboard & hotkeys**.
 
 Settings is a separate window with a side menu:
 
-- **General** — interface language, native and second language, quick translate of the selection, translate as you type
+- **General** — interface language, native and second language, quick translate of the selection, translate as you type, spell checking
 - **Appearance** — theme, font size
 - **Translation** — character limit
-- **Services** — speech, dictionary, CSV file, MyMemory e-mail, LibreTranslate URL and key
+- **Services** — speech, dictionary, CSV file, MyMemory e-mail, DeepL URL and key, LibreTranslate URL and key
 - **Keyboard & hotkeys** — recording combinations and their scope: local or global
 
 <div align="center">
@@ -188,8 +192,8 @@ qtranslate_r/
   services/     service interfaces, registry, translators, speech, dictionary
   core/         translation orchestration, history, documents, service setup
   config/       settings and data paths
-  platform/     Windows integrations: global hotkeys, selection capture
-  localization/ interface strings (ru/en/de/fr/zh)
+  platform/     Windows integrations: global hotkeys, selection capture, OCR, spell checking
+  localization/ interface strings (ru/en/de/fr/zh/ja/kk/ka)
   ui/           PySide6: window, dialogs, themes, icons, indicators
   quick.py      quick translate on Ctrl+Q
   inline.py     replace the selection on Ctrl+1
@@ -210,6 +214,8 @@ run.py          entry point
 | Interface | PySide6 / Qt 6 (Essentials package: QtCore, QtGui, QtWidgets, QtSvg) |
 | Network | requests |
 | Documents | python-docx (DOCX), pypdf (PDF) |
+| OCR | Windows.Media.Ocr — the system engine, no external services |
+| Spell checking | Windows Spell Checking API |
 | Platform | Windows (global hotkeys, tray, window resizing via Win32) |
 
 Services are described by contracts (`Translator`, `TextToSpeech`, `Dictionary`), so a new translator is added as a separate module without touching the core.
@@ -218,8 +224,8 @@ Services are described by contracts (`Translator`, `TextToSpeech`, `Dictionary`)
 
 ## What is next
 
-- [ ] Screen text recognition (OCR) — `Ctrl+I`
-- [ ] Spell checking in the input field
+- [x] Screen text recognition (OCR) — `Ctrl+I`
+- [x] Spell checking in the input field
 - [ ] Image search by word
 - [ ] Plugin groundwork: loading services from external modules
 - [ ] More translation languages
