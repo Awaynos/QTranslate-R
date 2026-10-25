@@ -1,12 +1,13 @@
-"""Глобальный хоткей через Win32 RegisterHotKey."""
+"""Глобальные горячие клавиши через Win32 RegisterHotKey."""
 
 from __future__ import annotations
 
 import ctypes
 import sys
+import threading
 from ctypes import wintypes
 
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QObject, Signal
 
 _IS_WINDOWS = sys.platform == "win32"
 
@@ -19,9 +20,11 @@ MOD_WIN = 0x0008
 MOD_NOREPEAT = 0x4000
 
 
-class GlobalHotkey(QThread):
+class _HotkeyEmitter(QObject):
     activated = Signal()
 
+
+class GlobalHotkey:
     def __init__(
         self,
         virtual_key: int,
@@ -31,9 +34,7 @@ class GlobalHotkey(QThread):
         alt: bool = False,
         win: bool = False,
         hotkey_id: int = 1,
-        parent=None,
     ) -> None:
-        super().__init__(parent)
         self._vk = virtual_key
         self._id = hotkey_id
         self._modifiers = (
@@ -44,12 +45,22 @@ class GlobalHotkey(QThread):
         )
         self._thread_id = 0
         self._registered = False
+        self._emitter = _HotkeyEmitter()
+        self._activated = self._emitter.activated
+        self._thread = threading.Thread(target=self._run, name="global-hotkey", daemon=True)
+
+    @property
+    def activated(self) -> Signal:
+        return self._activated
 
     @property
     def registered(self) -> bool:
         return self._registered
 
-    def run(self) -> None:
+    def start(self) -> None:
+        self._thread.start()
+
+    def _run(self) -> None:
         if not _IS_WINDOWS:
             return
         user32 = ctypes.windll.user32
@@ -65,14 +76,13 @@ class GlobalHotkey(QThread):
         message = wintypes.MSG()
         while user32.GetMessageW(ctypes.byref(message), None, 0, 0) > 0:
             if message.message == WM_HOTKEY and message.wParam == self._id:
-                self.activated.emit()
+                self._activated.emit()
 
         user32.UnregisterHotKey(None, self._id)
         self._registered = False
 
     def stop(self) -> None:
-        """Корректно завершить поток, вытолкнув WM_QUIT в его цикл сообщений."""
+        """Разбудить поток сообщением WM_QUIT и дождаться выхода."""
         if _IS_WINDOWS and self._thread_id:
             ctypes.windll.user32.PostThreadMessageW(self._thread_id, WM_QUIT, 0, 0)
-        self.wait(1000)
-
+        self._thread.join(1)
