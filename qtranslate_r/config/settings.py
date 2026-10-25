@@ -39,6 +39,8 @@ class Settings:
     mymemory_email: str = ""
     libretranslate_url: str = "https://libretranslate.com"
     libretranslate_api_key: str = ""
+    deepl_api_url: str = "https://api-free.deepl.com"
+    deepl_api_key: str = ""
 
     max_chars: int = 5000
 

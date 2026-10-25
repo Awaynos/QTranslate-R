@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from qtranslate_r.core.setup import build_registry  # noqa: E402
 from qtranslate_r.core.translation import TranslationService  # noqa: E402
 
-ALL = ["google", "yandex", "reverso", "mymemory", "libretranslate"]
+ALL = ["google", "bing", "deepl", "yandex", "reverso", "mymemory", "libretranslate"]
 
 
 def show(title: str, results) -> None:

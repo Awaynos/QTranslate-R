@@ -253,6 +253,13 @@ class SettingsDialog(QDialog):
         self._mymemory_email.setPlaceholderText(tr("settings.optional"))
         form.addRow(tr("settings.mymemory_email"), self._mymemory_email)
 
+        self._deepl_key = QLineEdit(settings.deepl_api_key)
+        self._deepl_key.setPlaceholderText(tr("settings.optional"))
+        form.addRow(tr("settings.deepl_key"), self._deepl_key)
+
+        self._deepl_url = QLineEdit(settings.deepl_api_url)
+        form.addRow(tr("settings.deepl_url"), self._deepl_url)
+
         self._libre_url = QLineEdit(settings.libretranslate_url)
         form.addRow(tr("settings.libre_url"), self._libre_url)
 
@@ -322,6 +329,8 @@ class SettingsDialog(QDialog):
             "csv_term_column": self._csv_term.value(),
             "csv_definition_column": self._csv_definition.value(),
             "mymemory_email": self._mymemory_email.text().strip(),
+            "deepl_api_key": self._deepl_key.text().strip(),
+            "deepl_api_url": self._deepl_url.text().strip() or "https://api-free.deepl.com",
             "libretranslate_url": self._libre_url.text().strip(),
             "libretranslate_api_key": self._libre_key.text().strip(),
             "hotkeys": {action: edit.text().strip() for action, edit in self._hotkey_edits.items()},

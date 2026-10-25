@@ -1,6 +1,8 @@
 """Встроенные сервисы."""
 
+from .bing import BingTranslator
 from .csv_dict import CsvDictionary
+from .deepl import DeepLTranslator
 from .google import GoogleTranslator
 from .google_tts import GoogleTTS
 from .libretranslate import LibreTranslateTranslator
@@ -11,6 +13,8 @@ from .wiktionary import WiktionaryDictionary
 from .yandex import YandexTranslator
 
 __all__ = [
+    "BingTranslator",
+    "DeepLTranslator",
     "GoogleTranslator",
     "MyMemoryTranslator",
     "LibreTranslateTranslator",

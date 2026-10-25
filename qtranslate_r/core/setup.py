@@ -5,7 +5,9 @@ from __future__ import annotations
 from ..config.settings import Settings
 from ..services.base import Dictionary, ServiceRole, TextToSpeech
 from ..services.providers import (
+    BingTranslator,
     CsvDictionary,
+    DeepLTranslator,
     GoogleTTS,
     GoogleTranslator,
     LibreTranslateTranslator,
@@ -21,6 +23,8 @@ from ..services.registry import ServiceRegistry
 def build_registry() -> ServiceRegistry:
     registry = ServiceRegistry()
     registry.register(GoogleTranslator())
+    registry.register(BingTranslator())
+    registry.register(DeepLTranslator())
     registry.register(MyMemoryTranslator())
     registry.register(LibreTranslateTranslator())
     registry.register(YandexTranslator())
@@ -53,6 +57,15 @@ def configure_registry(registry: ServiceRegistry, settings: Settings) -> None:
                 "path": settings.csv_path,
                 "term_column": settings.csv_term_column,
                 "definition_column": settings.csv_definition_column,
+            }
+        )
+
+    deepl = registry.get("deepl")
+    if deepl is not None:
+        deepl.configure(
+            {
+                "api_key": settings.deepl_api_key,
+                "api_url": settings.deepl_api_url,
             }
         )
 
