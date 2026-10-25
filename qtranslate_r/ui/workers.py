@@ -86,6 +86,45 @@ class DictionaryWorker(QRunnable):
         self.signals.finished.emit(self._token, entries)
 
 
+class OcrSignals(QObject):
+    finished = Signal(int, str, str)  # токен, текст, язык
+    failed = Signal(int, str)
+
+
+class OcrWorker(QRunnable):
+    """Распознавание текста с изображения в фоновом потоке."""
+
+    def __init__(self, token: int, image_path, language: str) -> None:
+        super().__init__()
+        self.signals = OcrSignals()
+        self._token = token
+        self._path = image_path
+        self._language = language
+
+    @Slot()
+    def run(self) -> None:
+        from ..platform.ocr import OcrError, recognize
+
+        try:
+            text, language = recognize(self._path, self._language)
+        except OcrError as exc:
+            self._cleanup()
+            self.signals.failed.emit(self._token, str(exc))
+            return
+        except Exception as exc:  # noqa: BLE001 — ошибки платформы
+            self._cleanup()
+            self.signals.failed.emit(self._token, str(exc))
+            return
+        self._cleanup()
+        self.signals.finished.emit(self._token, text, language)
+
+    def _cleanup(self) -> None:
+        try:
+            self._path.unlink()
+        except OSError:
+            pass
+
+
 class DocumentSignals(QObject):
     progress = Signal(int, int, str)  # сделано, всего, этап
     finished = Signal(str)            # путь к результату

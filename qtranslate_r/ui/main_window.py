@@ -3,11 +3,22 @@
 from __future__ import annotations
 
 import ctypes
+import os
 import sys
+import tempfile
 from ctypes import wintypes
+from pathlib import Path
 
-from PySide6.QtCore import QByteArray, QEvent, QPoint, Qt, QThreadPool, QTimer, Signal
-from PySide6.QtGui import QFont, QIcon, QKeySequence, QPixmap, QShortcut
+from PySide6.QtCore import QByteArray, QEvent, QPoint, QRect, Qt, QThreadPool, QTimer, Signal
+from PySide6.QtGui import (
+    QCursor,
+    QFont,
+    QGuiApplication,
+    QIcon,
+    QKeySequence,
+    QPixmap,
+    QShortcut,
+)
 from PySide6.QtWidgets import (
     QApplication,
     QComboBox,
@@ -17,7 +28,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QMenu,
-    QPlainTextEdit,
     QPushButton,
     QScrollArea,
     QSplitter,
@@ -51,10 +61,12 @@ from .dialogs import DocumentDialog, HistoryDialog, SettingsDialog
 from .dictionary_panel import DictionaryPanel
 from .icons import icon_size, icon as load_icon, ensure_ico, set_color as set_icon_color
 from .loading import InlineLoading
+from .ocr_overlay import OcrOverlay, capture_region
 from .sizing import lock_button_widths
+from .spellcheck import SpellTextEdit
 from .theme import apply_theme, palette
 from .widgets import LanguageBar, ProviderBar, ResultCard
-from .workers import DictionaryWorker, TranslateWorker
+from .workers import DictionaryWorker, OcrWorker, TranslateWorker
 
 _PANEL_BACKWARD = 0
 _PANEL_DICTIONARY = 1
@@ -136,6 +148,9 @@ class MainWindow(QMainWindow):
         self._dictionary_worker = None
         self._dictionary_pending: tuple[str, str] = ("", "en")
         self._pending: tuple[str, str, str] = ("", AUTO, "en")
+        self._ocr_token = 0
+        self._ocr_worker = None
+        self._ocr_overlay = None
         self._history_index = 0
         self._last_result_text = ""
         self._shortcuts: list[QShortcut] = []
@@ -167,6 +182,8 @@ class MainWindow(QMainWindow):
         self._apply_icons()
         self._apply_hotkeys()
         self._restore_state()
+        self._apply_spellcheck()
+        self._app.aboutToQuit.connect(self._stop_hotkeys)
         self._speech.playingChanged.connect(self._on_speech_state)
         self._speech.errorOccurred.connect(lambda msg: self._status.showMessage(msg, 4000))
 
@@ -536,7 +553,7 @@ class MainWindow(QMainWindow):
 
         editors = QHBoxLayout()
         editors.setSpacing(8)
-        self._input = QPlainTextEdit()
+        self._input = SpellTextEdit()
         self._input.setPlaceholderText(tr("input.placeholder"))
         self._input.setTabChangesFocus(True)
         self._input.textChanged.connect(self._on_text_changed)
@@ -709,11 +726,12 @@ class MainWindow(QMainWindow):
             "speak": self._toggle_speech,
             "dictionary": self._toggle_dictionary,
             "document": self._open_document,
+            "ocr": self._start_ocr,
             "history": self._open_history,
             "settings": self._open_settings,
         }
 
-    def _apply_hotkeys(self) -> None:
+    def _stop_hotkeys(self) -> None:
         for shortcut in self._shortcuts:
             shortcut.setEnabled(False)
             shortcut.deleteLater()
@@ -721,6 +739,9 @@ class MainWindow(QMainWindow):
         for hotkey in self._global_hotkeys:
             hotkey.stop()
         self._global_hotkeys.clear()
+
+    def _apply_hotkeys(self) -> None:
+        self._stop_hotkeys()
 
         slots = self._hotkey_slots()
         hotkey_id = 0x5200
@@ -915,9 +936,84 @@ class MainWindow(QMainWindow):
         if self._settings.translate_on_type:
             self._debounce.start()
 
+    def _apply_spellcheck(self) -> None:
+        source = self._language_bar.source()
+        if source == AUTO:
+            self._input.set_spellcheck(False, "")
+            return
+        self._input.set_spellcheck(self._settings.spellcheck_enabled, source)
+
     def _on_languages_changed(self) -> None:
+        self._apply_spellcheck()
         self._update_usage()
         self._persist()
+
+    def _start_ocr(self) -> None:
+        if self._ocr_overlay is not None:
+            return
+        screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+        if screen is None:
+            return
+        overlay = OcrOverlay(screen)
+        overlay.selected.connect(lambda rect: self._capture_ocr(screen, rect))
+        overlay.cancelled.connect(self._close_ocr_overlay)
+        self._ocr_overlay = overlay
+        overlay.start()
+
+    def _close_ocr_overlay(self) -> None:
+        overlay = self._ocr_overlay
+        self._ocr_overlay = None
+        if overlay is not None:
+            overlay.hide()
+            overlay.deleteLater()
+
+    def _capture_ocr(self, screen, rect: QRect) -> None:
+        self._close_ocr_overlay()
+        QTimer.singleShot(120, lambda: self._recognize_region(screen, rect))
+
+    def _recognize_region(self, screen, rect: QRect) -> None:
+        image = capture_region(screen, rect)
+        if image.isNull():
+            self._status.showMessage(tr("ocr.failed", message=tr("errors.bad_response")), 4000)
+            return
+
+        handle, name = tempfile.mkstemp(suffix=".png")
+        os.close(handle)
+        path = Path(name)
+        if not image.save(str(path), "PNG"):
+            path.unlink(missing_ok=True)
+            self._status.showMessage(tr("ocr.failed", message=tr("errors.bad_response")), 4000)
+            return
+
+        source = self._language_bar.source()
+        if source == AUTO:
+            source = self._settings.native_language
+
+        self._ocr_token += 1
+        worker = OcrWorker(self._ocr_token, path, source)
+        worker.signals.finished.connect(self._on_ocr_done)
+        worker.signals.failed.connect(self._on_ocr_failed)
+        self._ocr_worker = worker
+        self._status.showMessage(tr("ocr.recognizing"))
+        self._pool.start(worker)
+
+    def _on_ocr_done(self, token: int, text: str, language: str) -> None:
+        if token != self._ocr_token:
+            return
+        self._ocr_worker = None
+        text = text.strip()
+        if not text:
+            self._status.showMessage(tr("ocr.empty"), 4000)
+            return
+        self._restore_from_tray()
+        self._input.setPlainText(text)
+        self._start_translation()
+
+    def _on_ocr_failed(self, token: int, message: str) -> None:
+        if token != self._ocr_token:
+            return
+        self._ocr_worker = None
+        self._status.showMessage(message, 6000)
 
     def _on_providers_changed(self) -> None:
         self._update_usage()
@@ -1247,6 +1343,7 @@ class MainWindow(QMainWindow):
         )
         self._select(self._dictionary_combo, self._settings.dictionary_provider)
         self._select(self._tts_combo, self._settings.tts_provider)
+        self._apply_spellcheck()
         self._update_counter()
         self._apply_hotkeys()
         self._persist()

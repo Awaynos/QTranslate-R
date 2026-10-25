@@ -42,6 +42,8 @@ class Settings:
     deepl_api_url: str = "https://api-free.deepl.com"
     deepl_api_key: str = ""
 
+    spellcheck_enabled: bool = True
+
     max_chars: int = 5000
 
     @classmethod

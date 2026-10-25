@@ -170,6 +170,10 @@ class SettingsDialog(QDialog):
         self._translate_on_type.setChecked(bool(settings.translate_on_type))
         form.addRow("", self._translate_on_type)
 
+        self._spellcheck = QCheckBox(tr("settings.spellcheck"))
+        self._spellcheck.setChecked(bool(settings.spellcheck_enabled))
+        form.addRow("", self._spellcheck)
+
         self._native = QComboBox()
         self._native.addItem(tr("settings.not_set"), "")
         for language in all_languages(include_auto=False):
@@ -320,6 +324,7 @@ class SettingsDialog(QDialog):
             "font_size": self._font_size.value(),
             "max_chars": self._max_chars.value(),
             "translate_on_type": self._translate_on_type.isChecked(),
+            "spellcheck_enabled": self._spellcheck.isChecked(),
             "quick_translate_enabled": self._quick_translate.isChecked(),
             "native_language": self._native.currentData() or "",
             "second_language": self._second.currentData() or "",

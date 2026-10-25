@@ -19,6 +19,7 @@ class HotkeyAction:
 ACTIONS: tuple[HotkeyAction, ...] = (
     HotkeyAction("quick_translate", "hotkey.quick_translate", "Ctrl+Q", "global"),
     HotkeyAction("replace_selection", "hotkey.replace_selection", "Ctrl+1", "global"),
+    HotkeyAction("ocr", "hotkey.ocr", "Ctrl+I", "global"),
     HotkeyAction("translate", "hotkey.translate", "Ctrl+Return", "local"),
     HotkeyAction("copy_result", "hotkey.copy_result", "Ctrl+Shift+C", "local"),
     HotkeyAction("clear_input", "hotkey.clear_input", "Ctrl+Shift+X", "local"),

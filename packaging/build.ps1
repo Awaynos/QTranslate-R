@@ -25,6 +25,7 @@ $local = Join-Path $root "_local"
     --version-file "$root\packaging\version_info.txt" `
     --add-data "$root\languages;languages" `
     --add-data "$root\icons;icons" `
+    --add-data "$root\qtranslate_r\platform\ocr.ps1;qtranslate_r\platform" `
     --add-data "$root\VERSION;." `
     --workpath "$local\build" `
     --distpath "$local\dist" `
