@@ -7,7 +7,7 @@
 import sys
 from pathlib import Path
 
-_DEFAULT_VERSION = "0.1.0 Alpha"
+_DEFAULT_VERSION = "1.0.0"
 
 
 def _version_roots() -> list[Path]:

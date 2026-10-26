@@ -12,7 +12,7 @@
 
 **Экосистема:** [QMessages](https://github.com/Awaynos/QMessages) — быстрые заготовки для переписки.
 
-![Версия](https://img.shields.io/badge/версия-0.1.0_Alpha-9c9c9c?style=flat-square)
+![Версия](https://img.shields.io/badge/версия-1.0.0-8fd6c8?style=flat-square)
 ![Лицензия](https://img.shields.io/badge/лицензия-PolyForm_Noncommercial-8f8f8f?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11-4b8bbe?style=flat-square&logo=python&logoColor=white)
 ![Qt](https://img.shields.io/badge/PySide6-Qt_6-41cd52?style=flat-square&logo=qt&logoColor=white)
@@ -254,7 +254,7 @@ run.py          точка входа
 
 ## Версия и лицензия
 
-**0.1.0 Alpha** — активная разработка, возможны изменения.
+**1.0.0** — первый стабильный релиз.
 Версия лежит в файле [`VERSION`](VERSION) и правится обычным блокнотом.
 
 Проект распространяется под лицензией **[PolyForm Noncommercial 1.0.0](LICENSE)** ([русский перевод](LICENSE.ru.md)) — это *source-available*, а не open source.
