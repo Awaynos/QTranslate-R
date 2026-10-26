@@ -236,6 +236,7 @@
   "errors.docx_missing": "python-docx est requis pour DOCX",
   "errors.pdf_missing": "pypdf est requis pour PDF",
   "errors.tts_windows": "La synthèse vocale système n'est disponible que sous Windows",
+  "errors.tts_no_voice": "Aucune voix Windows n'est installée pour {language}",
   "errors.playback_windows": "La lecture n'est disponible que sous Windows",
   "errors.reverso_pair": "Reverso ne prend pas en charge cette paire de langues",
   "errors.speech": "Erreur de synthèse vocale : {message}",

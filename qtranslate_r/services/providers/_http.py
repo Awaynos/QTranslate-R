@@ -71,14 +71,23 @@ def http_post_form(
     return response
 
 
-def http_get_bytes(url: str, params: dict, *, timeout: int = DEFAULT_TIMEOUT) -> bytes:
+def http_get_bytes(
+    url: str,
+    params: dict,
+    *,
+    timeout: int = DEFAULT_TIMEOUT,
+    headers: dict | None = None,
+) -> bytes:
     """GET, возвращающий тело ответа как байты (для аудио и подобного)."""
+    request_headers = {"User-Agent": USER_AGENT}
+    if headers:
+        request_headers.update(headers)
     try:
         response = requests.get(
             url,
             params=params,
             timeout=timeout,
-            headers={"User-Agent": USER_AGENT},
+            headers=request_headers,
         )
     except requests.Timeout as exc:
         raise ServiceError(tr("errors.timeout"), kind="network") from exc

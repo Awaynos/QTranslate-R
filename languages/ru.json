@@ -227,6 +227,7 @@
   "errors.docx_missing": "Для DOCX нужен пакет python-docx",
   "errors.pdf_missing": "Для PDF нужен пакет pypdf",
   "errors.tts_windows": "Системная озвучка доступна только на Windows",
+  "errors.tts_no_voice": "Для языка {language} не установлен голос Windows",
   "errors.playback_windows": "Воспроизведение доступно только на Windows",
   "errors.reverso_pair": "Reverso не поддерживает эту пару языков",
   "errors.speech": "Ошибка озвучки: {message}",

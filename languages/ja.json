@@ -236,6 +236,7 @@
   "errors.docx_missing": "DOCX には python-docx が必要です",
   "errors.pdf_missing": "PDF には pypdf が必要です",
   "errors.tts_windows": "システム音声は Windows でのみ利用できます",
+  "errors.tts_no_voice": "{language} の Windows 音声がインストールされていません",
   "errors.playback_windows": "再生は Windows でのみ利用できます",
   "errors.reverso_pair": "Reverso はこの言語ペアに対応していません",
   "errors.speech": "音声エラー: {message}",

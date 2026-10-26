@@ -236,6 +236,7 @@
   "errors.docx_missing": "Für DOCX wird python-docx benötigt",
   "errors.pdf_missing": "Für PDF wird pypdf benötigt",
   "errors.tts_windows": "Die Systemsprachausgabe ist nur unter Windows verfügbar",
+  "errors.tts_no_voice": "Für {language} ist keine Windows-Stimme installiert",
   "errors.playback_windows": "Die Wiedergabe ist nur unter Windows verfügbar",
   "errors.reverso_pair": "Reverso unterstützt dieses Sprachpaar nicht",
   "errors.speech": "Fehler der Sprachausgabe: {message}",

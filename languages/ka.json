@@ -236,6 +236,7 @@
   "errors.docx_missing": "DOCX-ისთვის საჭიროა python-docx",
   "errors.pdf_missing": "PDF-ისთვის საჭიროა pypdf",
   "errors.tts_windows": "სისტემური ხმა ხელმისაწვდომია მხოლოდ Windows-ზე",
+  "errors.tts_no_voice": "{language} ენისთვის Windows ხმა არ არის დაყენებული",
   "errors.playback_windows": "დაკვრა ხელმისაწვდომია მხოლოდ Windows-ზე",
   "errors.reverso_pair": "Reverso ამ ენების წყვილს არ უჭერს მხარს",
   "errors.speech": "ხმის შეცდომა: {message}",

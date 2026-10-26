@@ -236,6 +236,7 @@
   "errors.docx_missing": "DOCX 需要 python-docx",
   "errors.pdf_missing": "PDF 需要 pypdf",
   "errors.tts_windows": "系统语音仅在 Windows 上可用",
+  "errors.tts_no_voice": "未安装 {language} 的 Windows 语音",
   "errors.playback_windows": "播放仅在 Windows 上可用",
   "errors.reverso_pair": "Reverso 不支持该语言对",
   "errors.speech": "语音错误：{message}",

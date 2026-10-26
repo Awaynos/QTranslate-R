@@ -893,6 +893,8 @@ class MainWindow(QMainWindow):
             return target
         native = self._settings.native_language
         second = self._settings.second_language
+        if not native or not second:
+            return native or second or "en"
         return second if source_language == native else native
 
     def _on_failed(self, token: int, message: str) -> None:
@@ -1070,10 +1072,10 @@ class MainWindow(QMainWindow):
 
     def _speech_target(self) -> tuple[str, str]:
         target = self._language_bar.target()
+        source = self._resolved_source_language()
         if self._last_result_text:
-            return self._last_result_text, target
-        source = self._language_bar.source()
-        return self._input.toPlainText().strip(), source if source != AUTO else "en"
+            return self._last_result_text, self._effective_target(source, target)
+        return self._input.toPlainText().strip(), source
 
     def _on_speech_state(self, playing: bool) -> None:
         if self._speak_button.icon().isNull():
@@ -1210,7 +1212,7 @@ class MainWindow(QMainWindow):
             widget = self._results_layout.itemAt(index).widget()
             if isinstance(widget, ResultCard) and widget.result.detected_source:
                 return widget.result.detected_source
-        return "en"
+        return self._settings.native_language or "en"
 
     def _on_dictionary_results(self, token: int, entries: list[DictionaryEntry]) -> None:
         if token != self._dictionary_token:

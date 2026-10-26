@@ -236,6 +236,7 @@
   "errors.docx_missing": "DOCX үшін python-docx қажет",
   "errors.pdf_missing": "PDF үшін pypdf қажет",
   "errors.tts_windows": "Жүйелік дауыс тек Windows-та қолжетімді",
+  "errors.tts_no_voice": "{language} үшін Windows дауысы орнатылмаған",
   "errors.playback_windows": "Ойнату тек Windows-та қолжетімді",
   "errors.reverso_pair": "Reverso бұл тіл жұбын қолдамайды",
   "errors.speech": "Дауыс қатесі: {message}",

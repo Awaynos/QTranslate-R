@@ -1,4 +1,4 @@
-"""Озвучка через неофициальный Google TTS."""
+"""Озвучка через открытый Google Translate TTS."""
 
 from __future__ import annotations
 
@@ -16,11 +16,16 @@ from ._util import chunk_text
 
 _ENDPOINT = "https://translate.google.com/translate_tts"
 _CHUNK_LIMIT = 180
-_ALIAS = "qtr_tts"
+_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+)
 
 
-def _mci(command: str) -> int:
-    return ctypes.windll.winmm.mciSendStringW(command, None, 0, None)
+def _mci(command: str) -> tuple[int, str]:
+    buffer = ctypes.create_unicode_buffer(256)
+    code = ctypes.windll.winmm.mciSendStringW(command, buffer, 256, None)
+    return code, buffer.value
 
 
 class GoogleTTS(TextToSpeech):
@@ -30,6 +35,9 @@ class GoogleTTS(TextToSpeech):
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._playing = False
+        self._stopped = threading.Event()
+        self._alias = ""
+        self._counter = 0
 
     def speak(self, text: str, language: str) -> None:
         if sys.platform != "win32":
@@ -37,31 +45,64 @@ class GoogleTTS(TextToSpeech):
         if not text.strip():
             return
 
-        for chunk in chunk_text(text, _CHUNK_LIMIT):
-            self._play(chunk, language)
+        self._stopped.clear()
+        with self._lock:
+            self._playing = True
+        try:
+            for chunk in chunk_text(text, _CHUNK_LIMIT):
+                if self._stopped.is_set():
+                    break
+                self._play(chunk, language)
+        finally:
+            with self._lock:
+                self._playing = False
+                self._alias = ""
 
     def _play(self, text: str, language: str) -> None:
         audio = http_get_bytes(
             _ENDPOINT,
-            {"ie": "UTF-8", "client": "tw-ob", "tl": language, "q": text},
+            {
+                "ie": "UTF-8",
+                "client": "tw-ob",
+                "tl": language,
+                "q": text,
+                "total": "1",
+                "idx": "0",
+                "textlen": str(len(text)),
+            },
+            headers={"User-Agent": _USER_AGENT, "Referer": "https://translate.google.com/"},
         )
-        if not audio:
-            raise ServiceError(tr("errors.empty_response"), kind="error")
+        if len(audio) < 512 or not (audio.startswith(b"ID3") or audio[0] == 0xFF):
+            raise ServiceError(tr("errors.bad_response"), kind="error")
 
         handle, path = tempfile.mkstemp(suffix=".mp3")
         os.close(handle)
         try:
             with open(path, "wb") as file:
                 file.write(audio)
+
             with self._lock:
-                self._playing = True
-            _mci(f'open "{path}" type mpegvideo alias {_ALIAS}')
+                self._counter += 1
+                alias = f"qtr_tts_{self._counter}"
+                self._alias = alias
+            if self._stopped.is_set():
+                return
+
+            code, error = _mci(f'open "{path}" type mpegvideo alias {alias}')
+            if code:
+                code, error = _mci(f'open "{path}" type mpegaudio alias {alias}')
+            if code:
+                raise ServiceError(tr("errors.speech", message=error), kind="error")
+
             try:
-                _mci(f"play {_ALIAS} wait")
+                code, error = _mci(f"play {alias} wait")
+                if code and not self._stopped.is_set():
+                    raise ServiceError(tr("errors.speech", message=error), kind="error")
             finally:
-                _mci(f"close {_ALIAS}")
+                _mci(f"close {alias}")
                 with self._lock:
-                    self._playing = False
+                    if self._alias == alias:
+                        self._alias = ""
         finally:
             try:
                 os.remove(path)
@@ -69,7 +110,9 @@ class GoogleTTS(TextToSpeech):
                 pass
 
     def stop(self) -> None:
+        self._stopped.set()
         with self._lock:
+            alias = self._alias
             playing = self._playing
-        if playing:
-            _mci(f"stop {_ALIAS}")
+        if playing and alias:
+            _mci(f"stop {alias}")
