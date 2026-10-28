@@ -84,7 +84,7 @@ Subtitles keep their timings, DOCX keeps paragraphs and tables, PDF is returned 
 - **Tray**: minimising sends the window to the tray, a double click brings it back.
 - **Screen text recognition** — `Ctrl+I`: select an area, the built-in Windows OCR returns the text, and it is translated right away.
 - **Spell checking** — wavy underlines and suggestions on right click; dictionaries come from Windows.
-- **Localisation**: Russian, English, German, French, Chinese, Japanese, Kazakh, Georgian, Belarusian and Polish; the interface language is chosen in settings.
+- **Localisation**: Russian, English, German, French, Spanish, Korean, Chinese, Japanese, Kazakh, Georgian, Belarusian and Polish; the interface language is chosen in settings.
 
 ### What is remembered
 
@@ -193,7 +193,7 @@ qtranslate_r/
   core/         translation orchestration, history, documents, service setup
   config/       settings and data paths
   platform/     Windows integrations: global hotkeys, selection capture, OCR, spell checking
-  localization/ interface strings (ru/en/de/fr/zh/ja/kk/ka/be/pl)
+  localization/ interface strings (ru/en/de/fr/es/ko/zh/ja/kk/ka/be/pl)
   ui/           PySide6: window, dialogs, themes, icons, indicators
   quick.py      quick translate on Ctrl+Q
   inline.py     replace the selection on Ctrl+1
