@@ -14,6 +14,7 @@ from .core.setup import build_registry, configure_registry
 from .core.translation import TranslationService
 from .inline import InlineReplaceController
 from .localization import set_language
+from .platform import app as platform_app
 from .quick import QuickTranslateController
 from .speech import SpeechController
 from .ui.icons import ensure_ico, set_directory as set_icons_directory
@@ -21,18 +22,6 @@ from .ui.main_window import MainWindow
 from .ui.theme import apply_theme
 
 _FONT_FAMILY = "Segoe UI"
-
-
-def _set_taskbar_identity() -> None:
-    """Отдельная запись в панели задач (иначе Windows группирует как «Python»)."""
-    if sys.platform != "win32":
-        return
-    try:
-        import ctypes
-
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("QTranslate.Remake")
-    except (AttributeError, OSError):
-        pass
 
 
 def main() -> int:
@@ -43,7 +32,7 @@ def main() -> int:
     settings = Settings.load(settings_file())
     set_language(settings.interface_language)
     set_icons_directory(resource("icons"))
-    _set_taskbar_identity()
+    platform_app.set_taskbar_identity()
 
     icon_path = ensure_ico() or app_icon_file()
     app.setWindowIcon(QIcon(str(icon_path)))

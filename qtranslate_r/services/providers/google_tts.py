@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-import ctypes
 import os
-import sys
 import tempfile
 import threading
+from pathlib import Path
 
 from ...domain.errors import ServiceError
 from ...localization import tr
+from ...platform.audio import play_file, stop_playback
+from ...platform.base import AudioError
 from ..base import TextToSpeech
 from ._http import http_get_bytes
 from ._util import chunk_text
@@ -22,12 +23,6 @@ _USER_AGENT = (
 )
 
 
-def _mci(command: str) -> tuple[int, str]:
-    buffer = ctypes.create_unicode_buffer(256)
-    code = ctypes.windll.winmm.mciSendStringW(command, buffer, 256, None)
-    return code, buffer.value
-
-
 class GoogleTTS(TextToSpeech):
     id = "google-tts"
     name = "Google"
@@ -36,12 +31,8 @@ class GoogleTTS(TextToSpeech):
         self._lock = threading.Lock()
         self._playing = False
         self._stopped = threading.Event()
-        self._alias = ""
-        self._counter = 0
 
     def speak(self, text: str, language: str) -> None:
-        if sys.platform != "win32":
-            raise ServiceError(tr("errors.playback_windows"), kind="unsupported")
         if not text.strip():
             return
 
@@ -56,7 +47,6 @@ class GoogleTTS(TextToSpeech):
         finally:
             with self._lock:
                 self._playing = False
-                self._alias = ""
 
     def _play(self, text: str, language: str) -> None:
         audio = http_get_bytes(
@@ -75,44 +65,28 @@ class GoogleTTS(TextToSpeech):
         if len(audio) < 512 or not (audio.startswith(b"ID3") or audio[0] == 0xFF):
             raise ServiceError(tr("errors.bad_response"), kind="error")
 
-        handle, path = tempfile.mkstemp(suffix=".mp3")
+        handle, name = tempfile.mkstemp(suffix=".mp3")
         os.close(handle)
+        path = Path(name)
         try:
             with open(path, "wb") as file:
                 file.write(audio)
-
-            with self._lock:
-                self._counter += 1
-                alias = f"qtr_tts_{self._counter}"
-                self._alias = alias
             if self._stopped.is_set():
                 return
-
-            code, error = _mci(f'open "{path}" type mpegvideo alias {alias}')
-            if code:
-                code, error = _mci(f'open "{path}" type mpegaudio alias {alias}')
-            if code:
-                raise ServiceError(tr("errors.speech", message=error), kind="error")
-
             try:
-                code, error = _mci(f"play {alias} wait")
-                if code and not self._stopped.is_set():
-                    raise ServiceError(tr("errors.speech", message=error), kind="error")
-            finally:
-                _mci(f"close {alias}")
-                with self._lock:
-                    if self._alias == alias:
-                        self._alias = ""
+                play_file(path)
+            except AudioError as exc:
+                if not self._stopped.is_set():
+                    raise ServiceError(tr("errors.speech", message=str(exc)), kind="error") from exc
         finally:
             try:
-                os.remove(path)
+                path.unlink()
             except OSError:
                 pass
 
     def stop(self) -> None:
         self._stopped.set()
         with self._lock:
-            alias = self._alias
             playing = self._playing
-        if playing and alias:
-            _mci(f"stop {alias}")
+        if playing:
+            stop_playback()

@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-import ctypes
 import os
-import sys
 import tempfile
-from ctypes import wintypes
 from pathlib import Path
 
-from PySide6.QtCore import QByteArray, QEvent, QPoint, QRect, Qt, QThreadPool, QTimer, Signal
+from PySide6.QtCore import QByteArray, QEvent, QRect, Qt, QThreadPool, QTimer, Signal
 from PySide6.QtGui import (
     QCursor,
     QFont,
@@ -52,16 +49,18 @@ from ..core.setup import (
 from ..core.translation import TranslationService
 from ..domain.language import AUTO, AUTO_PAIR, language_name, pair_label
 from ..domain.models import DictionaryEntry, TranslationResult
-from ..hotkeys import ACTIONS, binding, combination, scope, virtual_key
+from ..hotkeys import ACTIONS, binding, scope
 from ..localization import tr
-from ..platform.hotkey import GlobalHotkey
+from ..platform import capabilities, window as platform_window
+from ..platform.hotkey import create_hotkey
+from ..platform.screen import capture_region
 from ..services.registry import ServiceRegistry
 from ..speech import SpeechController
 from .dialogs import DocumentDialog, HistoryDialog, SettingsDialog
 from .dictionary_panel import DictionaryPanel
 from .icons import icon_size, icon as load_icon, ensure_ico, set_color as set_icon_color
 from .loading import InlineLoading
-from .ocr_overlay import OcrOverlay, capture_region
+from .ocr_overlay import OcrOverlay
 from .sizing import lock_button_widths
 from .spellcheck import SpellTextEdit
 from .theme import apply_theme, palette
@@ -70,22 +69,6 @@ from .workers import DictionaryWorker, OcrWorker, TranslateWorker
 
 _PANEL_BACKWARD = 0
 _PANEL_DICTIONARY = 1
-
-# Нативный ресайз безрамочного окна за края (WM_NCHITTEST).
-_WM_NCHITTEST = 0x0084
-_RESIZE_MARGIN = 6
-
-
-class _WinMessage(ctypes.Structure):
-    _fields_ = [
-        ("hwnd", wintypes.HWND),
-        ("message", wintypes.UINT),
-        ("wParam", wintypes.WPARAM),
-        ("lParam", wintypes.LPARAM),
-        ("time", wintypes.DWORD),
-        ("pt_x", wintypes.LONG),
-        ("pt_y", wintypes.LONG),
-    ]
 
 
 class _TitleBar(QFrame):
@@ -154,7 +137,7 @@ class MainWindow(QMainWindow):
         self._history_index = 0
         self._last_result_text = ""
         self._shortcuts: list[QShortcut] = []
-        self._global_hotkeys: list[GlobalHotkey] = []
+        self._global_hotkeys: list = []
         self._icon_buttons: list[tuple[QPushButton, tuple[str, ...]]] = []
         self._tray: QSystemTrayIcon | None = None
         self._splitter = None
@@ -294,7 +277,7 @@ class MainWindow(QMainWindow):
 
 
     def _build_tray(self) -> None:
-        if not QSystemTrayIcon.isSystemTrayAvailable():
+        if not capabilities().tray or not QSystemTrayIcon.isSystemTrayAvailable():
             return
 
         self._tray = QSystemTrayIcon(QIcon(str(app_icon_file())), self)
@@ -350,95 +333,13 @@ class MainWindow(QMainWindow):
 
     def showEvent(self, event) -> None:  # noqa: N802 — метод Qt
         super().showEvent(event)
-        self._enable_native_resize()
-        self._apply_window_icon()
-
-    def _apply_window_icon(self) -> None:
-        """Значок окна и панели задач — наш .ico, а не питоновский."""
-        if sys.platform != "win32":
-            return
-        ico = ensure_ico()
-        if ico is None:
-            return
-        try:
-            user32 = ctypes.windll.user32
-            lr_loadfromfile = 0x0010
-            image_icon = 1
-            wm_seticon = 0x0080
-            icon_small = 0
-            icon_big = 1
-
-            hwnd = wintypes.HWND(int(self.winId()))
-            big = user32.LoadImageW(None, str(ico), image_icon, 32, 32, lr_loadfromfile)
-            small = user32.LoadImageW(None, str(ico), image_icon, 16, 16, lr_loadfromfile)
-            if big:
-                user32.SendMessageW(hwnd, wm_seticon, icon_big, big)
-            if small:
-                user32.SendMessageW(hwnd, wm_seticon, icon_small, small)
-        except (AttributeError, OSError, TypeError):
-            pass
-
-    def _enable_native_resize(self) -> None:
-        """Безрамочному окну нужен стиль WS_THICKFRAME, иначе система не тянет за края."""
-        if sys.platform != "win32" or self._thick_frame:
-            return
-        try:
-            user32 = ctypes.windll.user32
-            user32.GetWindowLongPtrW.restype = ctypes.c_longlong
-            user32.GetWindowLongPtrW.argtypes = [wintypes.HWND, ctypes.c_int]
-            user32.SetWindowLongPtrW.restype = ctypes.c_longlong
-            user32.SetWindowLongPtrW.argtypes = [wintypes.HWND, ctypes.c_int, ctypes.c_longlong]
-
-            gwl_style = -16
-            ws_thickframe = 0x00040000
-            ws_minimizebox = 0x00020000
-            ws_maximizebox = 0x00010000
-
-            hwnd = wintypes.HWND(int(self.winId()))
-            style = user32.GetWindowLongPtrW(hwnd, gwl_style)
-            user32.SetWindowLongPtrW(
-                hwnd,
-                gwl_style,
-                style | ws_thickframe | ws_minimizebox | ws_maximizebox,
-            )
-            self._thick_frame = True
-        except (AttributeError, OSError, TypeError):
-            self._thick_frame = False
+        platform_window.enable_native_resize(self)
+        platform_window.apply_window_icon(self, ensure_ico())
 
     def nativeEvent(self, event_type, message):  # noqa: N802 — метод Qt
-        """Безрамочное окно: ресайз за края силами Windows."""
-        if sys.platform == "win32" and not self.isMaximized():
-            try:
-                msg = ctypes.cast(int(message), ctypes.POINTER(_WinMessage)).contents
-            except (TypeError, ValueError):
-                return super().nativeEvent(event_type, message)
-
-            if msg.message == _WM_NCHITTEST:
-                x = ctypes.c_short(msg.lParam & 0xFFFF).value
-                y = ctypes.c_short((msg.lParam >> 16) & 0xFFFF).value
-                point = self.mapFromGlobal(QPoint(x, y))
-                left = point.x() < _RESIZE_MARGIN
-                right = point.x() > self.width() - _RESIZE_MARGIN
-                top = point.y() < _RESIZE_MARGIN
-                bottom = point.y() > self.height() - _RESIZE_MARGIN
-
-                if top and left:
-                    return True, 13  # HTTOPLEFT
-                if top and right:
-                    return True, 14  # HTTOPRIGHT
-                if bottom and left:
-                    return True, 16  # HTBOTTOMLEFT
-                if bottom and right:
-                    return True, 17  # HTBOTTOMRIGHT
-                if left:
-                    return True, 10  # HTLEFT
-                if right:
-                    return True, 11  # HTRIGHT
-                if top:
-                    return True, 12  # HTTOP
-                if bottom:
-                    return True, 15  # HTBOTTOM
-
+        handled = platform_window.native_event(self, event_type, message)
+        if handled:
+            return handled
         return super().nativeEvent(event_type, message)
 
     def _build_history_row(self) -> QWidget:
@@ -754,15 +655,8 @@ class MainWindow(QMainWindow):
                 continue
 
             if scope(self._settings, action.id) == "global":
-                parsed = combination(sequence)
-                vk = virtual_key(parsed[0]) if parsed else None
-                if parsed is None or vk is None:
-                    continue
-                _, ctrl, shift, alt, win = parsed
                 hotkey_id += 1
-                hotkey = GlobalHotkey(
-                    vk, ctrl=ctrl, shift=shift, alt=alt, win=win, hotkey_id=hotkey_id
-                )
+                hotkey = create_hotkey(sequence, hotkey_id)
                 hotkey.activated.connect(slot)
                 hotkey.start()
                 self._global_hotkeys.append(hotkey)
@@ -951,6 +845,9 @@ class MainWindow(QMainWindow):
         self._persist()
 
     def _start_ocr(self) -> None:
+        if not capabilities().screen_capture:
+            self._status.showMessage(tr("ocr.unavailable"), 4000)
+            return
         if self._ocr_overlay is not None:
             return
         screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
@@ -1063,6 +960,13 @@ class MainWindow(QMainWindow):
     def _toggle_speech(self) -> None:
         if self._speech.is_playing():
             self._speech.stop()
+            return
+        caps = capabilities()
+        if self._settings.tts_provider == "system-tts" and not caps.system_tts:
+            self._status.showMessage(tr("errors.tts_windows"), 4000)
+            return
+        if self._settings.tts_provider == "google-tts" and not caps.audio_playback:
+            self._status.showMessage(tr("errors.playback_windows"), 4000)
             return
         text, language = self._speech_target()
         if not text:

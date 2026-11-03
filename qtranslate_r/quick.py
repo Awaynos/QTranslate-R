@@ -2,17 +2,15 @@
 
 from __future__ import annotations
 
-import sys
-
 from PySide6.QtCore import QObject, QRunnable, QThreadPool, Signal, Slot
 from PySide6.QtGui import QGuiApplication
 
 from .config.settings import Settings
 from .core.translation import TranslationService
 from .domain.language import AUTO_PAIR
-from .hotkeys import binding, combination, virtual_key
+from .hotkeys import binding
 from .localization import tr
-from .platform.hotkey import GlobalHotkey
+from .platform.hotkey import create_hotkey
 from .platform.selection import copy_selection
 from .speech import SpeechController
 from .ui.loading import CursorLoadingIndicator
@@ -57,23 +55,14 @@ class QuickTranslateController(QObject):
         self._target = "en"
         self._capture_worker = None
         self._active_worker = None
-        self._hotkey: GlobalHotkey | None = None
+        self._hotkey = None
         self.start()
 
     def start(self) -> None:
         self.stop()
         if not self._settings.quick_translate_enabled:
             return
-        if sys.platform != "win32":
-            return
-        parsed = combination(binding(self._settings, "quick_translate"))
-        if parsed is None:
-            return
-        qt_key, ctrl, shift, alt, win = parsed
-        vk = virtual_key(qt_key)
-        if vk is None:
-            return
-        self._hotkey = GlobalHotkey(vk, ctrl=ctrl, shift=shift, alt=alt, win=win, hotkey_id=0x5154)
+        self._hotkey = create_hotkey(binding(self._settings, "quick_translate"), 0x5154)
         self._hotkey.activated.connect(self._on_hotkey)
         self._hotkey.start()
 

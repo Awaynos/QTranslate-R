@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-import sys
-
 from PySide6.QtCore import QObject, QRunnable, QThreadPool, Signal, Slot
 from PySide6.QtGui import QGuiApplication
 
 from .config.settings import Settings
 from .core.translation import TranslationService
-from .hotkeys import binding, combination, virtual_key
-from .platform.hotkey import GlobalHotkey
+from .hotkeys import binding
+from .platform.hotkey import create_hotkey
 from .platform.selection import copy_selection, paste_clipboard
 from .ui.loading import CursorLoadingIndicator
 from .ui.workers import TranslateWorker
@@ -50,25 +48,14 @@ class InlineReplaceController(QObject):
         self._service = service
         self._pool = QThreadPool.globalInstance()
         self._token = 0
-        self._hotkey: GlobalHotkey | None = None
+        self._hotkey = None
         self._workers: list[QRunnable] = []
         self._loading = CursorLoadingIndicator(settings)
         self.start()
 
     def start(self) -> None:
         self.stop()
-        if sys.platform != "win32":
-            return
-        parsed = combination(binding(self._settings, "replace_selection"))
-        if parsed is None:
-            return
-        qt_key, ctrl, shift, alt, win = parsed
-        vk = virtual_key(qt_key)
-        if vk is None:
-            return
-        self._hotkey = GlobalHotkey(
-            vk, ctrl=ctrl, shift=shift, alt=alt, win=win, hotkey_id=0x5160
-        )
+        self._hotkey = create_hotkey(binding(self._settings, "replace_selection"), 0x5160)
         self._hotkey.activated.connect(self._on_hotkey)
         self._hotkey.start()
 

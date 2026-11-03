@@ -61,7 +61,7 @@ def has(key: str) -> bool:
 
 
 def system_language() -> str:
-    code = _windows_ui_language()
+    code = _ui_language()
     if code:
         return code
     for getter in (lambda: locale.getdefaultlocale()[0], lambda: locale.getlocale()[0]):
@@ -76,29 +76,12 @@ def system_language() -> str:
     return FALLBACK
 
 
-# Windows отдаёт полные названия вроде "Russian_Russia", поэтому берём LANGID.
-_LANGID = {
-    0x01: "ar", 0x04: "zh", 0x05: "cs", 0x06: "da", 0x07: "de", 0x08: "el",
-    0x09: "en", 0x0A: "es", 0x0B: "fi", 0x0C: "fr", 0x0D: "nl", 0x0E: "hu",
-    0x0F: "is", 0x10: "it", 0x11: "ja", 0x12: "ko", 0x13: "nl", 0x14: "no",
-    0x15: "pl", 0x16: "pt", 0x18: "ro", 0x19: "ru", 0x1A: "hr", 0x1B: "sk",
-    0x1C: "sq", 0x1D: "sv", 0x1E: "th", 0x1F: "tr", 0x20: "ur", 0x21: "id",
-    0x22: "uk", 0x23: "be", 0x24: "sl", 0x25: "et", 0x26: "lv", 0x27: "lt",
-    0x29: "fa", 0x2A: "vi", 0x2B: "hy", 0x2D: "az", 0x2E: "eu", 0x2F: "mk",
-    0x32: "ka", 0x34: "hi", 0x35: "ms", 0x36: "kk", 0x37: "sw", 0x39: "ta",
-    0x3E: "bn", 0x3F: "pa", 0x40: "gu", 0x45: "ta", 0x4E: "mr", 0x56: "te",
-    0x5A: "sr",
-}
-
-
-def _windows_ui_language() -> str | None:
+def _ui_language() -> str | None:
     try:
-        import ctypes
-
-        langid = ctypes.windll.kernel32.GetUserDefaultUILanguage()
-    except (AttributeError, OSError):
+        from ..platform.locale import ui_language
+    except ImportError:
         return None
-    return _LANGID.get(langid & 0x3FF)
+    return ui_language()
 
 
 def _load(path: Path) -> dict[str, str]:
