@@ -8,7 +8,7 @@ from ...domain.errors import ServiceError
 from ...localization import tr
 
 DEFAULT_TIMEOUT = 15
-USER_AGENT = "QTranslateR/0.0.1"
+USER_AGENT = "QTranslateR/1.0 (https://github.com/Awaynos/QTranslate-R)"
 
 
 def http_get(url: str, params: dict, *, timeout: int = DEFAULT_TIMEOUT) -> requests.Response:
@@ -99,6 +99,8 @@ def http_get_bytes(
 
 def _raise_for_status(response: requests.Response) -> None:
     status = response.status_code
+    if status == 404:
+        raise ServiceError(tr("errors.rejected", status=status), kind="not_found")
     if status == 429:
         raise ServiceError(tr("errors.rate_limit"), kind="limit")
     if status in (401, 403):

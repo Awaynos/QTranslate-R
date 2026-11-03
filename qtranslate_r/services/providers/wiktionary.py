@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import re
+from urllib.parse import quote
 
 from ...domain.errors import ServiceError
 from ...domain.models import DictionaryEntry
@@ -29,30 +30,40 @@ class WiktionaryDictionary(Dictionary):
     name = "Wiktionary"
 
     def lookup(self, word: str, language: str, target_language: str) -> list[DictionaryEntry]:
-        word = word.strip()
+        word = word.strip().strip(".,!?;:()[]\"'«»…")
         if not word:
             raise ServiceError(tr("errors.empty_text"), kind="unsupported")
 
         base = (language or "en").split("-")[0]
         hosts = [base, "en"] if base in _HOSTS and base != "en" else ["en"]
 
+        variants: list[str] = []
+        for candidate in (word, word.lower(), word[:1].upper() + word[1:].lower()):
+            if candidate and candidate not in variants:
+                variants.append(candidate)
+
         data = None
         last_error: ServiceError | None = None
         for host in hosts:
-            try:
-                data = http_get(
-                    f"https://{host}.wiktionary.org/api/rest_v1/page/definition/{word}",
-                    {},
-                ).json()
+            for candidate in variants:
+                try:
+                    data = http_get(
+                        f"https://{host}.wiktionary.org/api/rest_v1/page/definition/{quote(candidate, safe='')}",
+                        {},
+                    ).json()
+                    break
+                except ServiceError as exc:
+                    if exc.kind != "not_found":
+                        last_error = exc
+                except ValueError:
+                    last_error = ServiceError(tr("errors.bad_response"), kind="error")
+            if data is not None:
                 break
-            except ServiceError as exc:
-                last_error = exc
-            except ValueError as exc:
-                last_error = ServiceError(tr("errors.bad_response"), kind="error")
-                _ = exc
 
         if data is None:
-            raise last_error or ServiceError(tr("errors.network"), kind="network")
+            if last_error is not None:
+                raise last_error
+            return []
 
         return self._parse(word, language, data)
 

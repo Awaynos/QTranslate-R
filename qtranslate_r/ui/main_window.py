@@ -1099,7 +1099,8 @@ class MainWindow(QMainWindow):
     def _dictionary_target(self) -> tuple[str, str]:
         selected = self._input.textCursor().selectedText().strip()
         if selected:
-            return selected.split()[0], self._resolved_source_language()
+            word = selected.split()[0].strip(".,!?;:()[]\"'«»…")
+            return word, self._resolved_source_language()
 
         text = self._input.toPlainText().strip()
         if not text:
