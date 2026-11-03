@@ -186,6 +186,7 @@
   "errors.auth": "An access key is required or it is invalid",
   "errors.unavailable": "Service unavailable (HTTP {status})",
   "errors.rejected": "Request rejected (HTTP {status})",
+  "errors.deepl_region": "DeepL is unavailable in your region",
   "errors.empty_text": "Empty text",
   "errors.bad_response": "Unexpected service response",
   "errors.empty_response": "Empty service response",

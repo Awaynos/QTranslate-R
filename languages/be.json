@@ -223,6 +223,7 @@
   "errors.auth": "Патрэбны ключ доступу або ён несапраўдны",
   "errors.unavailable": "Сэрвіс недаступны (HTTP {status})",
   "errors.rejected": "Запыт адхілены (HTTP {status})",
+  "errors.deepl_region": "DeepL недаступны ў вашым рэгіёне",
   "errors.empty_text": "Пусты тэкст",
   "errors.bad_response": "Нечаканы адказ сэрвісу",
   "errors.empty_response": "Пусты адказ сэрвісу",

@@ -223,6 +223,7 @@
   "errors.auth": "需要访问密钥，或密钥无效",
   "errors.unavailable": "服务不可用（HTTP {status}）",
   "errors.rejected": "请求被拒绝（HTTP {status}）",
+  "errors.deepl_region": "DeepL 在您所在的地区不可用",
   "errors.empty_text": "文本为空",
   "errors.bad_response": "服务返回了意外的响应",
   "errors.empty_response": "服务返回了空响应",

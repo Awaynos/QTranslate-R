@@ -214,6 +214,7 @@
   "errors.auth": "Нужен ключ доступа или он неверный",
   "errors.unavailable": "Сервис недоступен (HTTP {status})",
   "errors.rejected": "Запрос отклонён (HTTP {status})",
+  "errors.deepl_region": "DeepL недоступен в вашем регионе",
   "errors.empty_text": "Пустой текст",
   "errors.bad_response": "Некорректный ответ сервиса",
   "errors.empty_response": "Пустой ответ сервиса",

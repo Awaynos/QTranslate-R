@@ -102,6 +102,8 @@ class DeepLTranslator(Translator):
 
         if response.status_code == 429:
             raise ServiceError(tr("errors.rate_limit"), kind="limit")
+        if response.status_code == 451:
+            raise ServiceError(tr("errors.deepl_region"), kind="unsupported")
         if response.status_code in (401, 403):
             raise ServiceError(tr("errors.auth"), kind="auth")
         if response.status_code == 456:

@@ -223,6 +223,7 @@
   "errors.auth": "アクセスキーが必要か、無効です",
   "errors.unavailable": "サービスを利用できません (HTTP {status})",
   "errors.rejected": "リクエストが拒否されました (HTTP {status})",
+  "errors.deepl_region": "お住まいの地域では DeepL を利用できません",
   "errors.empty_text": "テキストが空です",
   "errors.bad_response": "サービスから予期しない応答がありました",
   "errors.empty_response": "サービスからの応答が空です",

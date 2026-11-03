@@ -223,6 +223,7 @@
   "errors.auth": "액세스 키가 필요하거나 유효하지 않습니다",
   "errors.unavailable": "서비스를 사용할 수 없습니다 (HTTP {status})",
   "errors.rejected": "요청이 거부되었습니다 (HTTP {status})",
+  "errors.deepl_region": "DeepL은 이 지역에서 사용할 수 없습니다",
   "errors.empty_text": "빈 텍스트",
   "errors.bad_response": "서비스의 예상치 못한 응답",
   "errors.empty_response": "서비스의 빈 응답",

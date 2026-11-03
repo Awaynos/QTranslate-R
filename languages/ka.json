@@ -223,6 +223,7 @@
   "errors.auth": "საჭიროა წვდომის გასაღები ან ის არასწორია",
   "errors.unavailable": "სერვისი მიუწვდომელია (HTTP {status})",
   "errors.rejected": "მოთხოვნა უარყოფილია (HTTP {status})",
+  "errors.deepl_region": "DeepL თქვენს რეგიონში მიუწვდომელია",
   "errors.empty_text": "ცარიელი ტექსტი",
   "errors.bad_response": "სერვისის მოულოდნელი პასუხი",
   "errors.empty_response": "სერვისის ცარიელი პასუხი",

@@ -223,6 +223,7 @@
   "errors.auth": "Қатынау кілті қажет немесе жарамсыз",
   "errors.unavailable": "Қызмет қолжетімсіз (HTTP {status})",
   "errors.rejected": "Сұраныс қабылданбады (HTTP {status})",
+  "errors.deepl_region": "DeepL сіздің аймағыңызда қолжетімсіз",
   "errors.empty_text": "Бос мәтін",
   "errors.bad_response": "Қызметтен күтпеген жауап",
   "errors.empty_response": "Қызметтен бос жауап",

@@ -223,6 +223,7 @@
   "errors.auth": "Se requiere una clave de acceso o no es válida",
   "errors.unavailable": "Servicio no disponible (HTTP {status})",
   "errors.rejected": "Solicitud rechazada (HTTP {status})",
+  "errors.deepl_region": "DeepL no está disponible en tu región",
   "errors.empty_text": "Texto vacío",
   "errors.bad_response": "Respuesta inesperada del servicio",
   "errors.empty_response": "Respuesta vacía del servicio",

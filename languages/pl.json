@@ -223,6 +223,7 @@
   "errors.auth": "Wymagany klucz dostępu lub jest nieprawidłowy",
   "errors.unavailable": "Usługa niedostępna (HTTP {status})",
   "errors.rejected": "Żądanie odrzucone (HTTP {status})",
+  "errors.deepl_region": "DeepL jest niedostępny w Twoim regionie",
   "errors.empty_text": "Pusty tekst",
   "errors.bad_response": "Nieoczekiwana odpowiedź usługi",
   "errors.empty_response": "Pusta odpowiedź usługi",
