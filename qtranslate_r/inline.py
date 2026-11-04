@@ -9,7 +9,12 @@ from .config.settings import Settings
 from .core.translation import TranslationService
 from .hotkeys import binding
 from .platform.hotkey import create_hotkey
-from .platform.selection import copy_selection, paste_clipboard
+from .platform.selection import (
+    capture_selection,
+    copy_selection,
+    paste_clipboard,
+    set_clipboard,
+)
 from .ui.loading import CursorLoadingIndicator
 from .ui.workers import TranslateWorker
 
@@ -18,8 +23,28 @@ class _Signals(QObject):
     done = Signal(bool)
 
 
+class _CaptureSignals(QObject):
+    done = Signal(object)
+
+
+class _CaptureWorker(QRunnable):
+    """Захватить выделение в фоне."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.signals = _CaptureSignals()
+
+    @Slot()
+    def run(self) -> None:
+        text = capture_selection()
+        if text is None:
+            self.signals.done.emit(copy_selection())
+        else:
+            self.signals.done.emit(text)
+
+
 class _RunWorker(QRunnable):
-    """Выполнить небольшую операцию в фоне (копирование, вставка)."""
+    """Выполнить небольшую операцию в фоне (вставка)."""
 
     def __init__(self, action) -> None:
         super().__init__()
@@ -70,16 +95,22 @@ class InlineReplaceController(QObject):
 
     def _on_hotkey(self) -> None:
         self._loading.show_loading()
-        worker = _RunWorker(copy_selection)
+        worker = _CaptureWorker()
         worker.signals.done.connect(self._on_captured)
         self._track(worker)
         self._pool.start(worker)
 
-    def _on_captured(self, ok: bool) -> None:
+    def _on_captured(self, result) -> None:
+        if isinstance(result, str):
+            ok = bool(result)
+            text = result
+        else:
+            ok = bool(result)
+            text = QGuiApplication.clipboard().text()
         if not ok:
             self._loading.hide_loading()
             return
-        text = QGuiApplication.clipboard().text().strip()
+        text = text.strip()
         if not text:
             self._loading.hide_loading()
             return
@@ -112,7 +143,8 @@ class InlineReplaceController(QObject):
             self._loading.hide_loading()
             return
 
-        QGuiApplication.clipboard().setText(best.text)
+        if not set_clipboard(best.text):
+            QGuiApplication.clipboard().setText(best.text)
         worker = _RunWorker(paste_clipboard)
         self._track(worker)
         self._pool.start(worker)

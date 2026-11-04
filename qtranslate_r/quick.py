@@ -11,7 +11,7 @@ from .domain.language import AUTO_PAIR
 from .hotkeys import binding
 from .localization import tr
 from .platform.hotkey import create_hotkey
-from .platform.selection import copy_selection
+from .platform.selection import capture_selection, copy_selection
 from .speech import SpeechController
 from .ui.loading import CursorLoadingIndicator
 from .ui.quick_popup import QuickTranslatePopup
@@ -19,11 +19,11 @@ from .ui.workers import TranslateWorker
 
 
 class _CaptureSignals(QObject):
-    done = Signal(bool)
+    done = Signal(object)
 
 
 class _CaptureWorker(QRunnable):
-    """Скопировать выделение в буфер, не занимая UI-поток."""
+    """Захватить выделение, не занимая UI-поток."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -31,7 +31,11 @@ class _CaptureWorker(QRunnable):
 
     @Slot()
     def run(self) -> None:
-        self.signals.done.emit(copy_selection())
+        text = capture_selection()
+        if text is None:
+            self.signals.done.emit(copy_selection())
+        else:
+            self.signals.done.emit(text)
 
 
 class QuickTranslateController(QObject):
@@ -78,12 +82,18 @@ class QuickTranslateController(QObject):
         self._capture_worker = worker
         self._pool.start(worker)
 
-    def _on_captured(self, ok: bool) -> None:
+    def _on_captured(self, result) -> None:
+        if isinstance(result, str):
+            ok = bool(result)
+            text = result
+        else:
+            ok = bool(result)
+            text = QGuiApplication.clipboard().text()
         if not ok:
             self._loading.hide_loading()
             self._popup.show_error(tr("popup.select_text"))
             return
-        text = QGuiApplication.clipboard().text().strip()
+        text = text.strip()
         if not text:
             self._loading.hide_loading()
             self._popup.show_error(tr("popup.no_selection"))

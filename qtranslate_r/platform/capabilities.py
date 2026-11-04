@@ -7,6 +7,18 @@ import sys
 from .base import Capabilities
 
 
+def _linux() -> Capabilities:
+    from .linux.env import tool_path
+
+    clipboard = any(tool_path(name) for name in ("wl-paste", "xclip", "xsel"))
+    injection = any(tool_path(name) for name in ("wtype", "ydotool", "xdotool"))
+    return Capabilities(
+        selection_capture=clipboard,
+        replace_selection=injection,
+        tray=True,
+    )
+
+
 def capabilities() -> Capabilities:
     if sys.platform == "win32":
         return Capabilities(
@@ -19,4 +31,6 @@ def capabilities() -> Capabilities:
             spellcheck=True,
             tray=True,
         )
-    return Capabilities()
+    if sys.platform == "darwin":
+        return Capabilities()
+    return _linux()

@@ -25,6 +25,9 @@ def main() -> int:
 
     pasted: list[bool] = []
     inline_module.paste_clipboard = lambda: pasted.append(True)  # не шлём Ctrl+V на самом деле
+    inline_module.set_clipboard = lambda text: (
+        QGuiApplication.clipboard().setText(text) or True
+    )
 
     settings = Settings()
     settings.enabled_providers = ["google"]

@@ -63,3 +63,13 @@ def paste_clipboard() -> None:
     _key_event(VK_V)
     _key_event(VK_V, KEYEVENTF_KEYUP)
     _key_event(VK_CONTROL, KEYEVENTF_KEYUP)
+
+
+def capture_selection() -> str | None:
+    """Windows оставляет текст в буфере обмена для чтения через Qt."""
+    return None
+
+
+def set_clipboard(text: str) -> bool:
+    """Windows пишет буфер через Qt на стороне UI."""
+    return False

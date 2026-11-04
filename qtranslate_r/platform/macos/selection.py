@@ -7,5 +7,13 @@ def copy_selection() -> bool:
     return False
 
 
+def capture_selection() -> str | None:
+    return None
+
+
+def set_clipboard(text: str) -> bool:
+    return False
+
+
 def paste_clipboard() -> None:
     pass
