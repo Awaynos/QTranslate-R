@@ -19,3 +19,11 @@ def capture_region(screen, rect: QRect) -> QImage:
     width = round(rect.width() * scale_x)
     height = round(rect.height() * scale_y)
     return image.copy(x, y, max(1, width), max(1, height))
+
+
+def has_region_selection() -> bool:
+    return False
+
+
+def select_region() -> tuple[int, int, int, int] | None:
+    return None

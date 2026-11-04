@@ -53,7 +53,7 @@ from ..hotkeys import ACTIONS, binding, scope
 from ..localization import tr
 from ..platform import capabilities, window as platform_window
 from ..platform.hotkey import create_hotkey
-from ..platform.screen import capture_region
+from ..platform.screen import capture_region, has_region_selection, select_region
 from ..services.registry import ServiceRegistry
 from ..speech import SpeechController
 from .dialogs import DocumentDialog, HistoryDialog, SettingsDialog
@@ -853,6 +853,16 @@ class MainWindow(QMainWindow):
             return
         if self._ocr_overlay is not None:
             return
+
+        if has_region_selection():
+            region = select_region()
+            if region is None:
+                return
+            screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+            rect = QRect(*region)
+            QTimer.singleShot(120, lambda: self._recognize_region(screen, rect))
+            return
+
         screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
         if screen is None:
             return
