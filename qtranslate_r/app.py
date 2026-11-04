@@ -24,7 +24,18 @@ from .ui.theme import apply_theme
 _FONT_FAMILY = "Segoe UI"
 
 
+def _doctor() -> int:
+    from .platform.doctor import report
+
+    for line in report():
+        print(line)
+    return 0
+
+
 def main() -> int:
+    if "--doctor" in sys.argv[1:]:
+        return _doctor()
+
     app = QApplication(sys.argv)
     app.setApplicationName(__app_name__)
     app.setWindowIcon(QIcon(str(app_icon_file())))

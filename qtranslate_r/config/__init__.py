@@ -3,6 +3,8 @@
 from .paths import (
     app_icon_file,
     bundle_dir,
+    cache_dir,
+    config_dir,
     data_dir,
     history_file,
     project_root,
@@ -15,6 +17,8 @@ __all__ = [
     "Settings",
     "app_icon_file",
     "bundle_dir",
+    "cache_dir",
+    "config_dir",
     "data_dir",
     "history_file",
     "project_root",

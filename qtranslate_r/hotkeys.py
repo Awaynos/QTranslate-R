@@ -31,12 +31,23 @@ ACTIONS: tuple[HotkeyAction, ...] = (
     HotkeyAction("settings", "hotkey.settings", "Ctrl+Comma", "local"),
 )
 
-DEFAULTS: dict[str, str] = {action.id: action.default for action in ACTIONS}
 SCOPES: dict[str, str] = {action.id: action.scope for action in ACTIONS}
 
 
+def defaults() -> dict[str, str]:
+    from .platform.hotkey_defaults import defaults as platform_defaults
+
+    merged = {action.id: action.default for action in ACTIONS}
+    merged.update(platform_defaults())
+    return merged
+
+
+def default(action_id: str) -> str:
+    return defaults().get(action_id, "")
+
+
 def binding(settings, action_id: str) -> str:
-    return (settings.hotkeys or {}).get(action_id) or DEFAULTS.get(action_id, "")
+    return (settings.hotkeys or {}).get(action_id) or default(action_id)
 
 
 def scope(settings, action_id: str) -> str:

@@ -1,17 +1,12 @@
-"""Пути к данным и ресурсам приложения.
+"""Пути к данным, настройкам и ресурсам приложения.
 
-Данные приложения:
-  - для собранного `.exe` — в профиле пользователя (`%APPDATA%\\QTranslate Remake`),
-    потому что папка с программой может быть доступна только на чтение;
-  - при запуске из исходников — в `_local/data` рядом с проектом.
-
-Ресурсы (языки, иконки, VERSION) берутся сначала рядом с программой — их можно
-править, — а если их там нет, из встроенных в `.exe`.
+Собранное приложение хранит данные по правилам ОС: APPDATA в Windows,
+Application Support в macOS, XDG в Linux. При запуске из исходников данные
+остаются в `_local`, чтобы не трогать профиль пользователя.
 """
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
@@ -42,17 +37,49 @@ def resource(relative: str) -> Path:
     return bundle_dir() / relative
 
 
+def _user_base(kind: str) -> Path:
+    from ..platform.userpaths import base
+
+    return base(kind, APP_DIR_NAME)
+
+
+def _ensure(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def user_data_dir() -> Path:
+    return _user_base("data")
+
+
+def user_config_dir() -> Path:
+    return _user_base("config")
+
+
+def user_cache_dir() -> Path:
+    return _user_base("cache")
+
+
 def data_dir() -> Path:
     if is_frozen():
-        base = Path(os.environ.get("APPDATA") or Path.home()) / APP_DIR_NAME
-    else:
-        base = project_root() / "_local" / "data"
-    base.mkdir(parents=True, exist_ok=True)
-    return base
+        return _ensure(user_data_dir())
+    return _ensure(project_root() / "_local" / "data")
+
+
+def config_dir() -> Path:
+    if is_frozen():
+        return _ensure(user_config_dir())
+    return _ensure(project_root() / "_local" / "data")
+
+
+def cache_dir() -> Path:
+    if is_frozen():
+        return _ensure(user_cache_dir())
+    return _ensure(project_root() / "_local" / "cache")
 
 
 def settings_file() -> Path:
-    return data_dir() / "settings.json"
+    return config_dir() / "settings.json"
 
 
 def history_file() -> Path:
