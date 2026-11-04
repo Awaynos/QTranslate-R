@@ -976,10 +976,10 @@ class MainWindow(QMainWindow):
             return
         caps = capabilities()
         if self._settings.tts_provider == "system-tts" and not caps.system_tts:
-            self._status.showMessage(tr("errors.tts_windows"), 4000)
+            self._status.showMessage(tr("errors.no_tts"), 4000)
             return
         if self._settings.tts_provider == "google-tts" and not caps.audio_playback:
-            self._status.showMessage(tr("errors.playback_windows"), 4000)
+            self._status.showMessage(tr("errors.audio_playback"), 4000)
             return
         text, language = self._speech_target()
         if not text:

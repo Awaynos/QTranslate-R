@@ -239,6 +239,7 @@
   "errors.tts_windows": "Жүйелік дауыс тек Windows-та қолжетімді",
   "errors.tts_no_voice": "{language} үшін Windows дауысы орнатылмаған",
   "errors.playback_windows": "Ойнату тек Windows-та қолжетімді",
+  "errors.audio_playback": "Аудио ойнату қолжетімсіз. ffmpeg, mpv немесе pulseaudio-utils орнатыңыз.",
   "errors.reverso_pair": "Reverso бұл тіл жұбын қолдамайды",
   "errors.speech": "Дауыс қатесі: {message}",
   "errors.no_tts": "Қолжетімді дауыс қызметі жоқ",

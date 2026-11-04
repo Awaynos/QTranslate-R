@@ -239,6 +239,7 @@
   "errors.tts_windows": "Die Systemsprachausgabe ist nur unter Windows verfügbar",
   "errors.tts_no_voice": "Für {language} ist keine Windows-Stimme installiert",
   "errors.playback_windows": "Die Wiedergabe ist nur unter Windows verfügbar",
+  "errors.audio_playback": "Audiowiedergabe ist nicht verfügbar. Installieren Sie ffmpeg, mpv oder pulseaudio-utils.",
   "errors.reverso_pair": "Reverso unterstützt dieses Sprachpaar nicht",
   "errors.speech": "Fehler der Sprachausgabe: {message}",
   "errors.no_tts": "Kein Dienst für Sprachausgabe verfügbar",

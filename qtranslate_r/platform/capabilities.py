@@ -13,10 +13,14 @@ def _linux() -> Capabilities:
     clipboard = any(tool_path(name) for name in ("wl-paste", "xclip", "xsel"))
     injection = any(tool_path(name) for name in ("wtype", "ydotool", "xdotool"))
     screen = session_type() == "x11" or bool(tool_path("slurp") and tool_path("grim"))
+    speech = any(tool_path(name) for name in ("spd-say", "espeak-ng", "espeak"))
+    audio = any(tool_path(name) for name in ("ffplay", "mpv", "paplay"))
     return Capabilities(
         selection_capture=clipboard,
         replace_selection=injection,
         screen_capture=screen,
+        system_tts=speech,
+        audio_playback=audio,
         tray=True,
     )
 

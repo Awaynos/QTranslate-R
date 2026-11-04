@@ -230,6 +230,7 @@
   "errors.tts_windows": "Системная озвучка доступна только на Windows",
   "errors.tts_no_voice": "Для языка {language} не установлен голос Windows",
   "errors.playback_windows": "Воспроизведение доступно только на Windows",
+  "errors.audio_playback": "Воспроизведение аудио недоступно. Установите ffmpeg, mpv или pulseaudio-utils.",
   "errors.reverso_pair": "Reverso не поддерживает эту пару языков",
   "errors.speech": "Ошибка озвучки: {message}",
   "errors.no_tts": "Нет доступного сервиса озвучки",

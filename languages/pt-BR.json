@@ -239,6 +239,7 @@
   "errors.tts_windows": "A voz do sistema está disponível apenas no Windows",
   "errors.tts_no_voice": "Nenhuma voz do Windows está instalada para {language}",
   "errors.playback_windows": "A reprodução está disponível apenas no Windows",
+  "errors.audio_playback": "A reprodução de áudio não está disponível. Instale ffmpeg, mpv ou pulseaudio-utils.",
   "errors.reverso_pair": "O Reverso não oferece suporte a este par de idiomas",
   "errors.speech": "Erro de voz: {message}",
   "errors.no_tts": "Nenhum serviço de voz disponível",

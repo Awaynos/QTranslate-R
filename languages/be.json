@@ -239,6 +239,7 @@
   "errors.tts_windows": "Сістэмная агучка даступна толькі ў Windows",
   "errors.tts_no_voice": "Для мовы {language} не ўсталяваны голас Windows",
   "errors.playback_windows": "Прайграванне даступна толькі ў Windows",
+  "errors.audio_playback": "Прайграванне аўдыя недаступнае. Усталюйце ffmpeg, mpv або pulseaudio-utils.",
   "errors.reverso_pair": "Reverso не падтрымлівае гэту пару моў",
   "errors.speech": "Памылка агучкі: {message}",
   "errors.no_tts": "Няма даступнага сэрвісу агучкі",

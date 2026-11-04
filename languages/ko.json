@@ -239,6 +239,7 @@
   "errors.tts_windows": "시스템 음성은 Windows에서만 사용할 수 있습니다",
   "errors.tts_no_voice": "{language} 언어의 Windows 음성이 설치되어 있지 않습니다",
   "errors.playback_windows": "재생은 Windows에서만 사용할 수 있습니다",
+  "errors.audio_playback": "오디오를 재생할 수 없습니다. ffmpeg, mpv 또는 pulseaudio-utils를 설치하세요.",
   "errors.reverso_pair": "Reverso는 이 언어 쌍을 지원하지 않습니다",
   "errors.speech": "음성 오류: {message}",
   "errors.no_tts": "사용 가능한 음성 서비스가 없습니다",

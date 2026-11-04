@@ -239,6 +239,7 @@
   "errors.tts_windows": "システム音声は Windows でのみ利用できます",
   "errors.tts_no_voice": "{language} の Windows 音声がインストールされていません",
   "errors.playback_windows": "再生は Windows でのみ利用できます",
+  "errors.audio_playback": "音声を再生できません。ffmpeg、mpv、または pulseaudio-utils をインストールしてください。",
   "errors.reverso_pair": "Reverso はこの言語ペアに対応していません",
   "errors.speech": "音声エラー: {message}",
   "errors.no_tts": "利用できる音声サービスがありません",
