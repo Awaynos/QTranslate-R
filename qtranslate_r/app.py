@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 
+from PySide6.QtCore import QTimer
 from PySide6.QtGui import QFont, QIcon
 from PySide6.QtWidgets import QApplication
 
@@ -16,12 +17,26 @@ from .inline import InlineReplaceController
 from .localization import set_language
 from .platform import app as platform_app
 from .quick import QuickTranslateController
+from .single_instance import SingleInstance
 from .speech import SpeechController
 from .ui.icons import ensure_ico, set_directory as set_icons_directory
 from .ui.main_window import MainWindow
 from .ui.theme import apply_theme
 
 _FONT_FAMILY = "Segoe UI"
+_COMMANDS = {
+    "--quick": "quick",
+    "--replace": "replace",
+    "--ocr": "ocr",
+    "--show": "show",
+}
+
+
+def _requested_command() -> str:
+    for argument in sys.argv[1:]:
+        if argument in _COMMANDS:
+            return _COMMANDS[argument]
+    return ""
 
 
 def _doctor() -> int:
@@ -37,6 +52,11 @@ def main() -> int:
         return _doctor()
 
     app = QApplication(sys.argv)
+    instance = SingleInstance()
+    requested = _requested_command()
+    if not instance.start(requested or "show"):
+        return 0
+
     app.setApplicationName(__app_name__)
     app.setWindowIcon(QIcon(str(app_icon_file())))
 
@@ -73,6 +93,23 @@ def main() -> int:
     inline = InlineReplaceController(settings=settings, service=service)
     window.hotkeysChanged.connect(inline.start)
     app.aboutToQuit.connect(inline.stop)
+
+    def dispatch(command: str) -> None:
+        if command == "quick":
+            quick.trigger()
+        elif command == "replace":
+            inline.trigger()
+        elif command == "ocr":
+            window.trigger_ocr()
+        else:
+            window.showNormal()
+            window.raise_()
+            window.activateWindow()
+
+    instance.commandReceived.connect(dispatch)
+    app.aboutToQuit.connect(instance.stop)
+    if requested:
+        QTimer.singleShot(0, lambda: dispatch(requested))
 
     return app.exec()
 

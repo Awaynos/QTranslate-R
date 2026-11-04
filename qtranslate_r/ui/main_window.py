@@ -844,6 +844,9 @@ class MainWindow(QMainWindow):
         self._update_usage()
         self._persist()
 
+    def trigger_ocr(self) -> None:
+        self._start_ocr()
+
     def _start_ocr(self) -> None:
         if not capabilities().screen_capture:
             self._status.showMessage(tr("ocr.unavailable"), 4000)

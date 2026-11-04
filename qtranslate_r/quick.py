@@ -75,6 +75,9 @@ class QuickTranslateController(QObject):
             self._hotkey.stop()
             self._hotkey = None
 
+    def trigger(self) -> None:
+        self._on_hotkey()
+
     def _on_hotkey(self) -> None:
         self._loading.show_loading()
         worker = _CaptureWorker()

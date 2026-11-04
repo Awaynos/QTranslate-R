@@ -89,6 +89,9 @@ class InlineReplaceController(QObject):
             self._hotkey.stop()
             self._hotkey = None
 
+    def trigger(self) -> None:
+        self._on_hotkey()
+
     def _track(self, worker: QRunnable) -> None:
         self._workers.append(worker)
         del self._workers[:-4]
