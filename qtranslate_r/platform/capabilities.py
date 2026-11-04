@@ -9,6 +9,7 @@ from .base import Capabilities
 
 def _linux() -> Capabilities:
     from .linux.env import session_type, tool_path
+    from .linux.spellcheck import available as spell_available
 
     clipboard = any(tool_path(name) for name in ("wl-paste", "xclip", "xsel"))
     injection = any(tool_path(name) for name in ("wtype", "ydotool", "xdotool"))
@@ -21,6 +22,7 @@ def _linux() -> Capabilities:
         screen_capture=screen,
         system_tts=speech,
         audio_playback=audio,
+        spellcheck=spell_available(),
         tray=True,
     )
 
