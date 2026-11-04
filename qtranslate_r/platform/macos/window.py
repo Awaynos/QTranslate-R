@@ -13,3 +13,7 @@ def enable_native_resize(window) -> None:
 
 def native_event(window, event_type, message):
     return None
+
+
+def cursor_position() -> tuple[int, int] | None:
+    return None

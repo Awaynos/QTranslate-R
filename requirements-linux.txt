@@ -1,0 +1,2 @@
+# Optional Linux dependencies. The application runs without them.
+pyenchant>=3.2; sys_platform == "linux"

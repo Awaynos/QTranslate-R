@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QEvent, Qt, Signal
+from PySide6.QtCore import QEvent, QPoint, Qt, Signal
 from PySide6.QtGui import QCursor, QGuiApplication, QPixmap
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
@@ -11,10 +11,18 @@ from ..config.paths import app_icon_file
 from ..domain.language import AUTO, language_name
 from ..domain.models import TranslationResult
 from ..localization import tr
+from ..platform import window as platform_window
 from .sizing import lock_button_widths
 
 _WIDTH = 440
 _MAX_BODY = 320
+
+
+def _cursor_point() -> QPoint:
+    position = platform_window.cursor_position()
+    if position is None:
+        return QCursor.pos()
+    return QPoint(*position)
 
 
 def _preview(text: str, limit: int = 140) -> str:
@@ -156,9 +164,9 @@ class QuickTranslatePopup(QWidget):
 
     def _show_near_cursor(self) -> None:
         self.adjustSize()
-        screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+        pos = _cursor_point()
+        screen = QGuiApplication.screenAt(pos) or QGuiApplication.primaryScreen()
         area = screen.availableGeometry()
-        pos = QCursor.pos()
         x = min(max(pos.x() + 14, area.left()), area.right() - self.width())
         y = min(max(pos.y() + 14, area.top()), area.bottom() - self.height())
         self.move(x, y)

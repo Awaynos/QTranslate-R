@@ -1,0 +1,13 @@
+#!/bin/sh
+# Run QTranslate Remake from a source checkout or from an installed package.
+
+DIR=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+PY=python3
+if [ -x "$DIR/_local/.venv/bin/python" ]; then
+    PY="$DIR/_local/.venv/bin/python"
+fi
+
+if [ -f "$DIR/run.py" ]; then
+    exec "$PY" "$DIR/run.py" "$@"
+fi
+exec "$PY" -m qtranslate_r "$@"

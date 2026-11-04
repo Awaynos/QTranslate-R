@@ -6,7 +6,7 @@ import os
 import tempfile
 from pathlib import Path
 
-from PySide6.QtCore import QByteArray, QEvent, QRect, Qt, QThreadPool, QTimer, Signal
+from PySide6.QtCore import QByteArray, QEvent, QPoint, QRect, Qt, QThreadPool, QTimer, Signal
 from PySide6.QtGui import (
     QCursor,
     QFont,
@@ -69,6 +69,13 @@ from .workers import DictionaryWorker, OcrWorker, TranslateWorker
 
 _PANEL_BACKWARD = 0
 _PANEL_DICTIONARY = 1
+
+
+def _cursor_point() -> QPoint:
+    position = platform_window.cursor_position()
+    if position is None:
+        return QCursor.pos()
+    return QPoint(*position)
 
 
 class _TitleBar(QFrame):
@@ -858,12 +865,12 @@ class MainWindow(QMainWindow):
             region = select_region()
             if region is None:
                 return
-            screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+            screen = QGuiApplication.screenAt(_cursor_point()) or QGuiApplication.primaryScreen()
             rect = QRect(*region)
             QTimer.singleShot(120, lambda: self._recognize_region(screen, rect))
             return
 
-        screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+        screen = QGuiApplication.screenAt(_cursor_point()) or QGuiApplication.primaryScreen()
         if screen is None:
             return
         overlay = OcrOverlay(screen)

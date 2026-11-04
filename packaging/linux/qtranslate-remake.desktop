@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=QTranslate Remake
+Name[ru]=QTranslate Remake
+Comment=Desktop translator
+Comment[ru]=Настольный переводчик
+Exec=qtranslate-remake
+Icon=qtranslate-remake
+Terminal=false
+Categories=Utility;
+Keywords=translate;translator;dictionary;ocr;
+StartupWMClass=qtranslate-remake

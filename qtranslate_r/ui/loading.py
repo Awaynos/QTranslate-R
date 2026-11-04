@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import time
 
-from PySide6.QtCore import QRectF, Qt, QTimer
+from PySide6.QtCore import QPoint, QRectF, Qt, QTimer
 from PySide6.QtGui import QColor, QCursor, QGuiApplication, QPainter, QPen, QPixmap
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QProgressBar, QWidget
 
 from ..config.paths import app_icon_file
+from ..platform import window as platform_window
 from .theme import palette
 
 # Держим значок чуть дольше мгновенного ответа, чтобы не было мигания.
@@ -99,9 +100,10 @@ class CursorLoadingIndicator(QWidget):
         self.update()
 
     def _move_to_cursor(self) -> None:
-        screen = QGuiApplication.screenAt(QCursor.pos()) or QGuiApplication.primaryScreen()
+        position = platform_window.cursor_position()
+        point = QPoint(*position) if position else QCursor.pos()
+        screen = QGuiApplication.screenAt(point) or QGuiApplication.primaryScreen()
         area = screen.availableGeometry()
-        point = QCursor.pos()
         x = min(max(point.x() + 16, area.left()), area.right() - self.width())
         y = min(max(point.y() + 20, area.top()), area.bottom() - self.height())
         self.move(x, y)
@@ -111,8 +113,15 @@ class CursorLoadingIndicator(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
+        background = QColor(colors["surface"])
+        background.setAlpha(235)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(background)
+        painter.drawEllipse(QRectF(1, 1, self.width() - 2, self.height() - 2))
+
         ring = QRectF(5, 5, self.width() - 10, self.height() - 10)
 
+        painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.setPen(QPen(QColor(colors["border"]), 2))
         painter.drawEllipse(ring)
 

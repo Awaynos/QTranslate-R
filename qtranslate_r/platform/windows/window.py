@@ -108,3 +108,7 @@ def native_event(window, event_type, message):
     if bottom:
         return True, 15
     return None
+
+
+def cursor_position() -> tuple[int, int] | None:
+    return None
