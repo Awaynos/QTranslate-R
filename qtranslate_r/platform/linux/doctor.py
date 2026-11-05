@@ -28,6 +28,7 @@ def report() -> list[str]:
         "",
         "features:",
         f"  global_hotkeys: {'yes' if caps.global_hotkeys else 'no'}",
+        f"  hotkey_backend: {'x11' if caps.global_hotkeys else 'desktop binds'}",
         f"  selection_capture: {'yes' if caps.selection_capture else 'no'}",
         f"  replace_selection: {'yes' if caps.replace_selection else 'no'}",
         f"  screen_capture: {'yes' if caps.screen_capture else 'no'}",

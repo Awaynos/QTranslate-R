@@ -9,6 +9,7 @@ from .base import Capabilities
 
 def _linux() -> Capabilities:
     from .linux.env import session_type, tool_path
+    from .linux.hotkey import available as hotkeys_available
     from .linux.spellcheck import available as spell_available
 
     clipboard = any(tool_path(name) for name in ("wl-paste", "xclip", "xsel"))
@@ -17,6 +18,7 @@ def _linux() -> Capabilities:
     speech = any(tool_path(name) for name in ("spd-say", "espeak-ng", "espeak"))
     audio = any(tool_path(name) for name in ("ffplay", "mpv", "paplay"))
     return Capabilities(
+        global_hotkeys=hotkeys_available(),
         selection_capture=clipboard,
         replace_selection=injection,
         screen_capture=screen,
