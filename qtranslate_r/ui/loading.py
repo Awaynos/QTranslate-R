@@ -42,6 +42,7 @@ class CursorLoadingIndicator(QWidget):
         self._settings = settings
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_ShowWithoutActivating)
+        self.setWindowTitle("QTranslate Loading")
         self.setFixedSize(46, 46)
 
         self._logo = logo_pixmap(24)

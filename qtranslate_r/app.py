@@ -47,7 +47,33 @@ def _doctor() -> int:
     return 0
 
 
+def _install_hyprland_binds() -> int:
+    from .platform.linux.hyprland import install, install_rules, reload_hyprland
+
+    try:
+        path, changed = install()
+        rules_path, rules_changed = install_rules()
+    except FileNotFoundError as exc:
+        print(f"Hyprland config not found: {exc}")
+        return 1
+
+    if not changed and not rules_changed:
+        print(f"Hyprland integration already present: {path}")
+        return 0
+
+    print(f"Hyprland binds: {path}")
+    if rules_path != path:
+        print(f"Hyprland rules: {rules_path}")
+    if reload_hyprland():
+        print("Hyprland reloaded")
+    else:
+        print("Run 'hyprctl reload' to apply the changes")
+    return 0
+
+
 def main() -> int:
+    if "--install-hyprland-binds" in sys.argv[1:]:
+        return _install_hyprland_binds()
     if "--doctor" in sys.argv[1:]:
         return _doctor()
 

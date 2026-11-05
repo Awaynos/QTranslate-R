@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QEvent, QPoint, Qt, Signal
+from PySide6.QtCore import QPoint, Qt, Signal
 from PySide6.QtGui import QCursor, QGuiApplication, QPixmap
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
@@ -44,6 +44,7 @@ class QuickTranslatePopup(QWidget):
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setFixedWidth(_WIDTH)
+        self.setWindowTitle("QTranslate Popup")
         self._pinned = False
         self._result: TranslationResult | None = None
         self._source_text = ""
@@ -173,20 +174,6 @@ class QuickTranslatePopup(QWidget):
         self.show()
         self.raise_()
         self.activateWindow()
-
-    def focusOutEvent(self, event) -> None:  # noqa: N802 — метод Qt
-        if not self._pinned:
-            self.hide()
-        super().focusOutEvent(event)
-
-    def event(self, event) -> bool:
-        if (
-            event.type() == QEvent.Type.WindowDeactivate
-            and not self._pinned
-            and self.isVisible()
-        ):
-            self.hide()
-        return super().event(event)
 
     def keyPressEvent(self, event) -> None:  # noqa: N802 — метод Qt
         if event.key() == Qt.Key.Key_Escape:
