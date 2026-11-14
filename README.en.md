@@ -12,7 +12,7 @@ Select text → press `Ctrl+Q` → understand it without switching windows.
 
 **Ecosystem:** [QMessages](https://github.com/Awaynos/QMessages) — quick message snippets.
 
-![Version](https://img.shields.io/badge/version-1.0.0-8fd6c8?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1.0-8fd6c8?style=flat-square)
 ![License](https://img.shields.io/badge/license-PolyForm_Noncommercial-8f8f8f?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11-4b8bbe?style=flat-square&logo=python&logoColor=white)
 ![Qt](https://img.shields.io/badge/PySide6-Qt_6-41cd52?style=flat-square&logo=qt&logoColor=white)
@@ -121,7 +121,7 @@ python -m venv _local\.venv
 & "_local\.venv\Scripts\python.exe" run.py
 ```
 
-A ready Windows build is available: download `QTranslateRemake.exe` from the releases page — no Python needed.
+A ready Windows build is available: download `QTranslateRemake-windows.exe` from the releases page — no Python needed.
 
 ### Linux
 
@@ -142,7 +142,7 @@ Launcher, icon and `.desktop` file:
 packaging/linux/install.sh
 ```
 
-There are no AppImage/PKGBUILD builds yet. See the [Linux guide](docs/linux.en.md) for Arch/Debian/Fedora dependencies, Wayland and Hyprland.
+Linux builds are available in release `v1.1.0`: a universal AppImage, a `tar.gz`, and an Arch package. The universal build requires glibc 2.35+; the Arch package installs its dependencies. See the [Linux guide](docs/linux.en.md) for Arch/Debian/Fedora dependencies, Wayland and Hyprland.
 
 When run from source, settings and history live in `_local\data` (Windows) or `_local/data` (Linux); the installed version keeps them in the user profile.
 
@@ -283,7 +283,7 @@ Support is entirely optional. You can also help without money: report a bug, sug
 
 ## Version and license
 
-**1.0.0** — the first stable release.
+**1.1.0** — the first stable release with Linux support.
 The version lives in the [`VERSION`](VERSION) file and is edited with Notepad.
 
 The project is distributed under the **[PolyForm Noncommercial 1.0.0](LICENSE)** license ([Russian translation](LICENSE.ru.md)) — it is *source-available*, not open source.

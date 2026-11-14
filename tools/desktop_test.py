@@ -58,8 +58,13 @@ def check_identity() -> None:
         linux_app.QGuiApplication = FakeGuiApplication
         try:
             linux_app.set_taskbar_identity()
-            assert FakeGuiApplication.value == ""
-            (base / "applications/qtranslate-remake.desktop").write_text("", encoding="utf-8")
+            assert FakeGuiApplication.value == linux_app.DESKTOP_ID
+            desktop = base / "applications/qtranslate-remake.desktop"
+            icon = base / "icons/hicolor/256x256/apps/qtranslate-remake.png"
+            assert desktop.is_file()
+            assert "run.py" in desktop.read_text(encoding="utf-8")
+            assert icon.is_file()
+            assert linux_app.desktop_installed()
             linux_app.set_taskbar_identity()
             assert FakeGuiApplication.value == linux_app.DESKTOP_ID
         finally:

@@ -60,20 +60,24 @@ def user_cache_dir() -> Path:
     return _user_base("cache")
 
 
+def _use_user_dirs() -> bool:
+    return is_frozen() or not (project_root() / "_local").is_dir()
+
+
 def data_dir() -> Path:
-    if is_frozen():
+    if _use_user_dirs():
         return _ensure(user_data_dir())
     return _ensure(project_root() / "_local" / "data")
 
 
 def config_dir() -> Path:
-    if is_frozen():
+    if _use_user_dirs():
         return _ensure(user_config_dir())
     return _ensure(project_root() / "_local" / "data")
 
 
 def cache_dir() -> Path:
-    if is_frozen():
+    if _use_user_dirs():
         return _ensure(user_cache_dir())
     return _ensure(project_root() / "_local" / "cache")
 

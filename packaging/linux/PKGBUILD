@@ -1,0 +1,57 @@
+# Maintainer: Awaynos
+pkgname=qtranslate-remake
+pkgver=1.1.0
+pkgrel=1
+pkgdesc="Desktop translator with multiple services, OCR, dictionary and speech"
+arch=('x86_64')
+url="https://github.com/Awaynos/QTranslate-R"
+license=('custom:PolyForm-Noncommercial-1.0.0')
+options=('!debug')
+depends=(
+    'wl-clipboard'
+    'wtype'
+    'ydotool'
+    'xclip'
+    'xsel'
+    'xdotool'
+    'grim'
+    'slurp'
+    'tesseract'
+    'tesseract-data-eng'
+    'tesseract-data-rus'
+    'speech-dispatcher'
+    'espeak-ng'
+    'ffmpeg'
+    'python-pyenchant'
+    'hunspell-en_us'
+    'hunspell-ru'
+)
+source=("$pkgname-$pkgver.tar.gz::$url/releases/download/v$pkgver/QTranslateRemake-$pkgver-linux-arch.tar.gz")
+sha256sums=('e1386fe08e241ba2544305a09b7abdac2a79408957aae1bbe90a74f05f994eb2')
+
+package() {
+    cd "QTranslateRemake-$pkgver-linux-arch"
+
+    install -dm755 "$pkgdir/usr/lib/$pkgname"
+    install -dm755 "$pkgdir/usr/bin"
+    install -dm755 "$pkgdir/usr/share/applications"
+    install -dm755 "$pkgdir/usr/share/icons/hicolor/256x256/apps"
+    install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+
+    install -Dm755 QTranslateRemake "$pkgdir/usr/lib/$pkgname/QTranslateRemake"
+
+    install -Dm755 /dev/stdin "$pkgdir/usr/bin/qtranslate-remake" <<'EOF'
+#!/bin/sh
+exec /usr/lib/qtranslate-remake/QTranslateRemake "$@"
+EOF
+
+    install -Dm644 qtranslate-remake.desktop \
+        "$pkgdir/usr/share/applications/qtranslate-remake.desktop"
+    install -Dm644 qtranslate-remake.png \
+        "$pkgdir/usr/share/icons/hicolor/256x256/apps/qtranslate-remake.png"
+
+    install -Dm644 LICENSE \
+        "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    install -Dm644 LICENSE.ru.md \
+        "$pkgdir/usr/share/licenses/$pkgname/LICENSE.ru.md"
+}
