@@ -29,7 +29,17 @@ python -m venv _local\.venv
 & "_local\.venv\Scripts\python.exe" run.py
 ```
 
-You need **Python 3.11+**. Only Windows is supported for now.
+You need **Python 3.11+**. Windows and Linux (X11/Wayland) are supported; macOS is still stubs.
+
+Linux:
+
+```bash
+python3 -m venv _local/.venv
+_local/.venv/bin/python -m pip install -r requirements.txt
+_local/.venv/bin/python run.py
+```
+
+Linux details: [docs/linux.en.md](docs/linux.en.md).
 
 ## Checks
 
@@ -43,6 +53,15 @@ There is no test framework — the `tools/` folder holds small scripts you run m
 .\.venv\Scripts\python.exe tools\document_test.py    # documents
 .\.venv\Scripts\python.exe tools\persist_test.py     # settings persistence
 ```
+
+Linux:
+
+```bash
+QT_QPA_PLATFORM=offscreen _local/.venv/bin/python tools/core_test.py
+_local/.venv/bin/python tools/ocr_test.py
+```
+
+Run UI tests with `QT_QPA_PLATFORM=offscreen`, and the OCR test without it.
 
 If you add a feature, add a check next to it, in the same style.
 

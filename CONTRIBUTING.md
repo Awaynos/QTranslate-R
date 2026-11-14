@@ -29,7 +29,17 @@ python -m venv _local\.venv
 & "_local\.venv\Scripts\python.exe" run.py
 ```
 
-Нужен **Python 3.11+**. Пока поддерживается только Windows.
+Нужен **Python 3.11+**. Поддерживаются Windows и Linux (X11/Wayland), macOS — пока заглушки.
+
+Linux:
+
+```bash
+python3 -m venv _local/.venv
+_local/.venv/bin/python -m pip install -r requirements.txt
+_local/.venv/bin/python run.py
+```
+
+Linux-подробности: [docs/linux.md](docs/linux.md).
 
 ## Проверки
 
@@ -43,6 +53,15 @@ python -m venv _local\.venv
 .\.venv\Scripts\python.exe tools\document_test.py    # документы
 .\.venv\Scripts\python.exe tools\persist_test.py     # сохранение настроек
 ```
+
+Linux:
+
+```bash
+QT_QPA_PLATFORM=offscreen _local/.venv/bin/python tools/core_test.py
+_local/.venv/bin/python tools/ocr_test.py
+```
+
+UI-тесты запускай с `QT_QPA_PLATFORM=offscreen`, OCR-тест — без него.
 
 Добавил функцию — добавь и проверку рядом, в том же стиле.
 

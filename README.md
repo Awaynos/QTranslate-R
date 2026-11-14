@@ -16,7 +16,7 @@
 ![Лицензия](https://img.shields.io/badge/лицензия-PolyForm_Noncommercial-8f8f8f?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11-4b8bbe?style=flat-square&logo=python&logoColor=white)
 ![Qt](https://img.shields.io/badge/PySide6-Qt_6-41cd52?style=flat-square&logo=qt&logoColor=white)
-![Платформа](https://img.shields.io/badge/платформа-Windows-4a5057?style=flat-square&logo=windows&logoColor=white)
+![Платформа](https://img.shields.io/badge/платформа-Windows_%7C_Linux-4a5057?style=flat-square&logo=linux&logoColor=white)
 
 <br>
 
@@ -55,7 +55,7 @@
 
 | | |
 |---|---|
-| **`Ctrl+Q`** | Быстрый перевод выделенного — попап у курсора, сам закрывается при клике в пустое место |
+| **`Ctrl+Q`** | Быстрый перевод выделенного — попап у курсора, закрывается по `Esc` или крестику |
 | **`Ctrl+1`** | **Замена выделенного текста переводом** — прямо в том приложении, где работаешь |
 | **`Ctrl+I`** | **Распознавание текста с экрана**: выделяешь область — текст попадает в поле ввода и переводится |
 | **`Ctrl+E`** | Озвучить выделенное или результат |
@@ -63,11 +63,13 @@
 | **`Ctrl+Shift+D`** | Перевод документа |
 | **Все комбинации настраиваются** | Запись комбинации и выбор области: локально или глобально |
 
+На Linux по умолчанию используются `Ctrl+Alt+Q`, `Ctrl+Alt+1`, `Ctrl+Alt+I`, чтобы не отбирать стандартные сочетания у других приложений. На Wayland глобальные хоткеи задаются биндами окружения; для Hyprland есть установщик. Подробности — в [Linux-руководстве](docs/linux.md).
+
 ### Сервисы
 
 | | |
 |---|---|
-| **Озвучка** | Системная (Windows SAPI) и Google TTS |
+| **Озвучка** | Системная (SAPI в Windows, `speech-dispatcher`/`espeak-ng` в Linux) и Google TTS |
 | **Словарь** | Wiktionary (официальный MediaWiki API) и **свой CSV-словарь** — глоссарий, аббревиатуры, коды ошибок |
 | **Без ключей** | Google, Bing, DeepL (бесплатный веб-эндпоинт), Yandex, Reverso и MyMemory работают без API-ключей. DeepL можно перевести на официальный API по ключу, LibreTranslate — на свой сервер |
 
@@ -82,19 +84,22 @@
 - **Четыре темы:** Металл, Бирюза, Бронза, Светлая. По умолчанию — Металл, шрифт 10.
 - **Индикатор загрузки с логотипом** — кольцо у курсора и полоса в статус-баре.
 - **Трей**: сворачивание уводит окно в трей, двойной клик возвращает.
-- **Распознавание текста с экрана** — `Ctrl+I`: выделяешь область, системный Windows OCR возвращает текст, и он сразу уходит в перевод.
-- **Проверка орфографии** — волнистое подчёркивание и подсказки по правому клику; словари берутся из Windows.
+- **Распознавание текста с экрана** — `Ctrl+I`: выделяешь область, Windows OCR или Tesseract возвращает текст, и он сразу уходит в перевод.
+- **Проверка орфографии** — волнистое подчёркивание и подсказки по правому клику; используются системные словари Windows или Hunspell.
 - **Локализация**: русский, английский, немецкий, французский, испанский, корейский, португальский (Бразилия), китайский, японский, казахский, грузинский, белорусский и польский; язык интерфейса выбирается в настройках.
 
 ### Что запоминается
 
 Всё, что ты меняешь, сохраняется и переживает перезапуск: тема, шрифт, языки, включённые сервисы, выбранные «Перевести / Словарь / Озвучка», горячие клавиши, размеры областей, выбранная вкладка, размер и положение окна.
 
-**Где лежат данные:** `%APPDATA%\QTranslate Remake\`
-- `settings.json` — все настройки;
-- `history.json` — история переводов.
+**Где лежат данные:**
 
-Как открыть папку: нажми `Win+R`, вставь `%APPDATA%\QTranslate Remake` и нажми Enter. Удаление этой папки сбрасывает приложение к настройкам по умолчанию и очищает историю.
+- Windows: `%APPDATA%\QTranslate Remake\`
+  - `settings.json` — все настройки;
+  - `history.json` — история переводов.
+- Linux: `~/.local/share/QTranslate Remake` (данные), `~/.config/QTranslate Remake` (настройки), `~/.cache/QTranslate Remake` (кеш).
+
+Как открыть папку в Windows: нажми `Win+R`, вставь `%APPDATA%\QTranslate Remake` и нажми Enter. Удаление этой папки сбрасывает приложение к настройкам по умолчанию и очищает историю.
 
 <div align="center">
 <img src="docs/images/quick-popup.png" alt="Быстрый перевод" width="440">
@@ -116,10 +121,30 @@ python -m venv _local\.venv
 & "_local\.venv\Scripts\python.exe" run.py
 ```
 
-Готовая сборка есть: скачай `QTranslateRemake.exe` со страницы релизов — Python не нужен.
+Готовая сборка для Windows есть: скачай `QTranslateRemake.exe` со страницы релизов — Python не нужен.
 
-Настройки и история при запуске из исходников лежат в `_local\data`; у собранного `.exe` они
-хранятся в профиле пользователя — `%APPDATA%\QTranslate Remake`.
+### Linux
+
+Нужен Python 3.11+ и PySide6. Из исходников:
+
+```bash
+git clone https://github.com/Awaynos/QTranslate-R.git
+cd QTranslate-R
+
+python3 -m venv _local/.venv
+_local/.venv/bin/python -m pip install -r requirements.txt
+_local/.venv/bin/python run.py
+```
+
+Ярлык, иконка и `.desktop`:
+
+```bash
+packaging/linux/install.sh
+```
+
+Готовых AppImage/PKGBUILD пока нет. Подробная инструкция, зависимости для Arch/Debian/Fedora, Wayland и Hyprland — в [docs/linux.md](docs/linux.md).
+
+Настройки и история при запуске из исходников лежат в `_local\data` (Windows) или `_local/data` (Linux); у установленной версии — в профиле пользователя.
 
 ---
 
@@ -139,6 +164,8 @@ python -m venv _local\.venv
 | `Ctrl+Shift+D` | Перевод документа |
 | `Ctrl+H` | История |
 | `Ctrl+Comma` | Настройки |
+
+В Linux глобальные хоткеи по умолчанию — `Ctrl+Alt+Q`, `Ctrl+Alt+1`, `Ctrl+Alt+I`. На Wayland они задаются биндами окружения, а не перехватываются приложением.
 
 Всё это меняется в **Настройки → Клавиатура и хоткеи**.
 
@@ -192,7 +219,7 @@ qtranslate_r/
   services/     интерфейсы сервисов, реестр, переводчики, озвучка, словарь
   core/         оркестрация перевода, история, документы, сборка сервисов
   config/       настройки и пути к данным
-  platform/     интеграции Windows: глобальные хоткеи, захват выделения, OCR, орфография
+  platform/     интеграции ОС: Windows, Linux (X11/Wayland), macOS-заглушки
   localization/ строки интерфейса (ru/en/de/fr/es/ko/pt-BR/zh/ja/kk/ka/be/pl)
   ui/           PySide6: окно, диалоги, темы, иконки, индикаторы
   quick.py      быстрый перевод по Ctrl+Q
@@ -214,9 +241,9 @@ run.py          точка входа
 | Интерфейс | PySide6 / Qt 6 (пакет Essentials: QtCore, QtGui, QtWidgets, QtSvg) |
 | Сеть | requests |
 | Документы | python-docx (DOCX), pypdf (PDF) |
-| OCR | Windows.Media.Ocr — системный движок, без внешних сервисов |
-| Орфография | Windows Spell Checking API |
-| Платформа | Windows (глобальные хоткеи, трей, ресайз окна — через Win32) |
+| OCR | Windows.Media.Ocr в Windows, Tesseract в Linux |
+| Орфография | Windows Spell Checking API или `enchant` + Hunspell |
+| Платформа | Windows и Linux (X11/Wayland); macOS — заглушки |
 
 Сервисы описаны контрактами (`Translator`, `TextToSpeech`, `Dictionary`), поэтому новый переводчик добавляется отдельным модулем, без правок ядра.
 
@@ -231,7 +258,9 @@ run.py          точка входа
 - [ ] Больше языков перевода
 - [ ] Больше языков интерфейса
 - [ ] Кастомные темы: создание и редактирование прямо в приложении
-- [ ] Поддержка Linux и macOS
+- [x] Ядро и бэкенды Linux (X11/Wayland)
+- [ ] Готовые пакеты Linux: AppImage, PKGBUILD
+- [ ] Поддержка macOS
 
 ---
 

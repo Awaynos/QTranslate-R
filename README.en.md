@@ -16,7 +16,7 @@ Select text → press `Ctrl+Q` → understand it without switching windows.
 ![License](https://img.shields.io/badge/license-PolyForm_Noncommercial-8f8f8f?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11-4b8bbe?style=flat-square&logo=python&logoColor=white)
 ![Qt](https://img.shields.io/badge/PySide6-Qt_6-41cd52?style=flat-square&logo=qt&logoColor=white)
-![Platform](https://img.shields.io/badge/platform-Windows-4a5057?style=flat-square&logo=windows&logoColor=white)
+![Platform](https://img.shields.io/badge/platform-Windows_%7C_Linux-4a5057?style=flat-square&logo=linux&logoColor=white)
 
 <br>
 
@@ -55,7 +55,7 @@ There are **no AI features inside**: no summarisation, no rewriting, no calls to
 
 | | |
 |---|---|
-| **`Ctrl+Q`** | Quick translate of the selection — a popup next to the cursor that closes on an outside click |
+| **`Ctrl+Q`** | Quick translate of the selection — a popup at the cursor, closed with `Esc` or the close button |
 | **`Ctrl+1`** | **Replace the selected text with its translation** — right in the app you are working in |
 | **`Ctrl+I`** | **Recognise text from the screen**: select an area — the text goes into the input field and is translated |
 | **`Ctrl+E`** | Read the selection or the result aloud |
@@ -63,11 +63,13 @@ There are **no AI features inside**: no summarisation, no rewriting, no calls to
 | **`Ctrl+Shift+D`** | Translate a document |
 | **Every shortcut is configurable** | Record a combination and choose its scope: local or global |
 
+On Linux the defaults are `Ctrl+Alt+Q`, `Ctrl+Alt+1`, `Ctrl+Alt+I`, so the standard combinations are not taken from other applications. On Wayland global hotkeys are desktop bindings; Hyprland has an installer. See the [Linux guide](docs/linux.en.md).
+
 ### Services
 
 | | |
 |---|---|
-| **Speech** | System engine (Windows SAPI) and Google TTS |
+| **Speech** | System engine (SAPI on Windows, `speech-dispatcher`/`espeak-ng` on Linux) and Google TTS |
 | **Dictionary** | Wiktionary (official MediaWiki API) and **your own CSV dictionary** — a glossary, abbreviations, error codes |
 | **No API keys** | Google, Bing, DeepL (free web endpoint), Yandex, Reverso and MyMemory work without a key. DeepL can use its official API with a key, LibreTranslate can point at your own server |
 
@@ -82,19 +84,22 @@ Subtitles keep their timings, DOCX keeps paragraphs and tables, PDF is returned 
 - **Four themes:** Metal, Turquoise, Bronze, Light. Default — Metal, font size 10.
 - **A loading indicator with the logo** — a ring at the cursor and a bar in the status bar.
 - **Tray**: minimising sends the window to the tray, a double click brings it back.
-- **Screen text recognition** — `Ctrl+I`: select an area, the built-in Windows OCR returns the text, and it is translated right away.
-- **Spell checking** — wavy underlines and suggestions on right click; dictionaries come from Windows.
+- **Screen text recognition** — `Ctrl+I`: select an area, Windows OCR or Tesseract returns the text, and it is translated right away.
+- **Spell checking** — wavy underlines and suggestions on right click; Windows system dictionaries or Hunspell are used.
 - **Localisation**: Russian, English, German, French, Spanish, Korean, Portuguese (Brazil), Chinese, Japanese, Kazakh, Georgian, Belarusian and Polish; the interface language is chosen in settings.
 
 ### What is remembered
 
 Everything you change is saved and survives a restart: theme, font, languages, enabled services, the chosen “Translate / Dictionary / Speech” services, hotkeys, panel sizes, the selected tab, window size and position.
 
-**Where the data lives:** `%APPDATA%\QTranslate Remake\`
-- `settings.json` — all settings;
-- `history.json` — translation history.
+**Where the data lives:**
 
-To open the folder: press `Win+R`, paste `%APPDATA%\QTranslate Remake` and hit Enter. Deleting that folder resets the app to its defaults and clears the history.
+- Windows: `%APPDATA%\QTranslate Remake\`
+  - `settings.json` — all settings;
+  - `history.json` — translation history.
+- Linux: `~/.local/share/QTranslate Remake` (data), `~/.config/QTranslate Remake` (settings), `~/.cache/QTranslate Remake` (cache).
+
+To open the folder in Windows: press `Win+R`, paste `%APPDATA%\QTranslate Remake` and hit Enter. Deleting that folder resets the app to its defaults and clears the history.
 
 <div align="center">
 <img src="docs/images/en/quick-popup.png" alt="Quick translate" width="440">
@@ -116,10 +121,30 @@ python -m venv _local\.venv
 & "_local\.venv\Scripts\python.exe" run.py
 ```
 
-A ready build is available: download `QTranslateRemake.exe` from the releases page — no Python needed.
+A ready Windows build is available: download `QTranslateRemake.exe` from the releases page — no Python needed.
 
-When run from source, settings and history live in `_local\data`; the built `.exe` keeps them in the
-user profile — `%APPDATA%\QTranslate Remake`.
+### Linux
+
+You need Python 3.11+ and PySide6. From source:
+
+```bash
+git clone https://github.com/Awaynos/QTranslate-R.git
+cd QTranslate-R
+
+python3 -m venv _local/.venv
+_local/.venv/bin/python -m pip install -r requirements.txt
+_local/.venv/bin/python run.py
+```
+
+Launcher, icon and `.desktop` file:
+
+```bash
+packaging/linux/install.sh
+```
+
+There are no AppImage/PKGBUILD builds yet. See the [Linux guide](docs/linux.en.md) for Arch/Debian/Fedora dependencies, Wayland and Hyprland.
+
+When run from source, settings and history live in `_local\data` (Windows) or `_local/data` (Linux); the installed version keeps them in the user profile.
 
 ---
 
@@ -139,6 +164,8 @@ user profile — `%APPDATA%\QTranslate Remake`.
 | `Ctrl+Shift+D` | Translate a document |
 | `Ctrl+H` | History |
 | `Ctrl+Comma` | Settings |
+
+On Linux the global defaults are `Ctrl+Alt+Q`, `Ctrl+Alt+1`, `Ctrl+Alt+I`. On Wayland they are desktop bindings rather than keys grabbed by the app.
 
 All of them can be changed in **Settings → Keyboard & hotkeys**.
 
@@ -192,7 +219,7 @@ qtranslate_r/
   services/     service interfaces, registry, translators, speech, dictionary
   core/         translation orchestration, history, documents, service setup
   config/       settings and data paths
-  platform/     Windows integrations: global hotkeys, selection capture, OCR, spell checking
+  platform/     OS integrations: Windows, Linux (X11/Wayland), macOS stubs
   localization/ interface strings (ru/en/de/fr/es/ko/pt-BR/zh/ja/kk/ka/be/pl)
   ui/           PySide6: window, dialogs, themes, icons, indicators
   quick.py      quick translate on Ctrl+Q
@@ -214,9 +241,9 @@ run.py          entry point
 | Interface | PySide6 / Qt 6 (Essentials package: QtCore, QtGui, QtWidgets, QtSvg) |
 | Network | requests |
 | Documents | python-docx (DOCX), pypdf (PDF) |
-| OCR | Windows.Media.Ocr — the system engine, no external services |
-| Spell checking | Windows Spell Checking API |
-| Platform | Windows (global hotkeys, tray, window resizing via Win32) |
+| OCR | Windows.Media.Ocr on Windows, Tesseract on Linux |
+| Spell checking | Windows Spell Checking API or `enchant` + Hunspell |
+| Platform | Windows and Linux (X11/Wayland); macOS stubs |
 
 Services are described by contracts (`Translator`, `TextToSpeech`, `Dictionary`), so a new translator is added as a separate module without touching the core.
 
@@ -231,7 +258,9 @@ Services are described by contracts (`Translator`, `TextToSpeech`, `Dictionary`)
 - [ ] More translation languages
 - [ ] More interface languages
 - [ ] Custom themes: create and edit them inside the app
-- [ ] Linux and macOS support
+- [x] Linux core and backends (X11/Wayland)
+- [ ] Linux packages: AppImage, PKGBUILD
+- [ ] macOS support
 
 ---
 

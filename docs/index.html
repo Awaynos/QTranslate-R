@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QTranslate Remake — переводчик для Windows в один хоткей</title>
-<meta name="description" content="Настольный переводчик для Windows: выдели текст и нажми Ctrl+Q. Семь сервисов сразу, распознавание текста с экрана, проверка орфографии, словарь, озвучка и перевод документов. Без API-ключей и аккаунтов.">
+<title>QTranslate Remake — переводчик для Windows и Linux в один хоткей</title>
+<meta name="description" content="Настольный переводчик для Windows и Linux: выдели текст и нажми Ctrl+Q. Семь сервисов сразу, распознавание текста с экрана, проверка орфографии, словарь, озвучка и перевод документов. Без API-ключей и аккаунтов.">
 <meta name="theme-color" content="#171718">
 <link rel="canonical" href="https://awaynos.github.io/QTranslate-R/">
 <link rel="icon" href="images/app-icon.png" type="image/png">
@@ -13,12 +13,12 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:site_name" content="QTranslate Remake">
-<meta property="og:title" content="QTranslate Remake — переводчик для Windows в один хоткей">
+<meta property="og:title" content="QTranslate Remake — переводчик для Windows и Linux в один хоткей">
 <meta property="og:description" content="Выдели текст → Ctrl+Q → перевод от семи сервисов, не переключая окно. OCR, проверка орфографии, бесплатно и без API-ключей.">
 <meta property="og:url" content="https://awaynos.github.io/QTranslate-R/">
 <meta property="og:image" content="https://awaynos.github.io/QTranslate-R/images/main-window.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="QTranslate Remake — переводчик для Windows">
+<meta name="twitter:title" content="QTranslate Remake — переводчик для Windows и Linux">
 <meta name="twitter:description" content="Выдели текст → Ctrl+Q → перевод от семи сервисов, OCR и проверка орфографии. Бесплатно, без ключей.">
 <meta name="twitter:image" content="https://awaynos.github.io/QTranslate-R/images/main-window.png">
 
@@ -27,10 +27,10 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "QTranslate Remake",
-  "operatingSystem": "Windows 10, Windows 11",
+  "operatingSystem": "Windows 10, Windows 11, Linux",
   "applicationCategory": "UtilitiesApplication",
   "softwareVersion": "1.0.0",
-  "description": "Настольный переводчик для Windows с быстрым переводом по Ctrl+Q, семью сервисами, распознаванием текста с экрана, проверкой орфографии, словарём, озвучкой и переводом документов.",
+  "description": "Настольный переводчик для Windows и Linux с быстрым переводом по Ctrl+Q, семью сервисами, распознаванием текста с экрана, проверкой орфографии, словарём, озвучкой и переводом документов.",
   "downloadUrl": "https://github.com/Awaynos/QTranslate-R/releases/download/v1.0.0/QTranslateRemake.exe",
   "codeRepository": "https://github.com/Awaynos/QTranslate-R",
   "license": "https://github.com/Awaynos/QTranslate-R/blob/main/LICENSE",
@@ -459,7 +459,7 @@
 <main>
   <!-- HERO -->
   <div class="wrap hero">
-    <div class="badge reveal"><span class="dot"></span> <b>1.0.0</b> · Windows 10/11</div>
+    <div class="badge reveal"><span class="dot"></span> <b>1.0.0</b> · Windows 10/11 · Linux</div>
     <h1 class="reveal"><span class="grad">Перевод, который<br>всегда под рукой</span></h1>
     <p class="lede reveal">
       Настольный переводчик в духе QTranslate 6.10. Выделил текст — нажал
@@ -481,7 +481,7 @@
     <div class="meta reveal">
       <span>44,8 МБ</span><i></i>
       <span>.exe · без установки</span><i></i>
-      <span>Python не нужен</span><i></i>
+      <span>Linux — из исходников</span><i></i>
       <span>Бесплатно</span>
     </div>
 
@@ -538,7 +538,7 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3"/></svg>
           </div>
           <h3>Ctrl+Q — и перевод у курсора</h3>
-          <p>Выдели текст в любом приложении — попап появится рядом с курсором и закроется, когда кликнешь мимо.</p>
+          <p>Выдели текст в любом приложении — попап появится рядом с курсором. Закрывается по Esc или крестику.</p>
           <div class="keys">
             <kbd class="key">Ctrl</kbd><kbd class="key">Q</kbd>
           </div>
@@ -549,7 +549,7 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 8h10M7 12h6M7 16h8"/></svg>
           </div>
           <h3>Ctrl+I — текст прямо с экрана</h3>
-          <p>Выдели область на экране — встроенный Windows OCR распознает текст, подставит его в поле ввода и сразу переведёт.</p>
+          <p>Выдели область на экране — Windows OCR или Tesseract распознает текст, подставит его в поле ввода и сразу переведёт.</p>
           <div class="keys">
             <kbd class="key">Ctrl</kbd><kbd class="key">I</kbd>
           </div>
@@ -560,7 +560,7 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></svg>
           </div>
           <h3>Проверка орфографии</h3>
-          <p>Ошибки подчёркиваются прямо при вводе, а по правому клику предлагаются варианты замены. Словари берутся из Windows.</p>
+          <p>Ошибки подчёркиваются прямо при вводе, а по правому клику предлагаются варианты замены. Используются словари Windows или Hunspell.</p>
         </article>
 
         <article class="card w2 reveal">
@@ -600,7 +600,7 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
           </div>
           <h3>Озвучка</h3>
-          <p>Системный голос Windows (SAPI) или Google TTS — с горячей клавишей Ctrl+E.</p>
+          <p>Системный голос (SAPI, speech-dispatcher или espeak-ng) либо Google TTS — с горячей клавишей Ctrl+E.</p>
         </article>
 
         <article class="card w2 reveal">
@@ -671,7 +671,7 @@
     <div class="wrap">
       <div class="eyebrow reveal">Установка</div>
       <h2 class="reveal">Запуск за минуту</h2>
-      <p class="sub reveal">Только Windows 10 и 11. Python нужен, если запускаешь из исходников.</p>
+      <p class="sub reveal">Windows 10/11 и Linux. Python нужен для Linux и запуска из исходников; готовых Linux-пакетов пока нет.</p>
 
       <div class="install">
         <div class="panel reveal">
@@ -708,7 +708,7 @@ python -m venv _local\.venv
 &amp; "_local\.venv\Scripts\python.exe" -m pip install -r requirements.txt
 &amp; "_local\.venv\Scripts\python.exe" run.py</code></pre>
           <ul class="req">
-            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Windows 10/11, x64</li>
+            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Windows 10/11 x64 или Linux (X11/Wayland)</li>
             <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Python 3.11+ — только для запуска из исходников</li>
             <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>Интернет — для переводчиков и Wiktionary</li>
           </ul>
