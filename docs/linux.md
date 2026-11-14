@@ -2,6 +2,17 @@
 
 Приложение работает из исходников и поддерживает X11 и Wayland. Часть функций зависит от окружения и установленных утилит.
 
+## Готовые сборки
+
+В релизе `v1.1.0`:
+
+- `QTranslateRemake-1.1.0-linux-universal-x86_64.AppImage` — универсальная сборка, glibc 2.35+;
+- `QTranslateRemake-1.1.0-linux-universal.tar.gz` — то же архивом;
+- `qtranslate-remake-1.1.0-1-x86_64.pkg.tar.zst` — пакет для Arch, зависимости ставятся через pacman;
+- `QTranslateRemake-1.1.0-linux-arch.tar.gz` — Arch-сборка архивом.
+
+AppImage и tar при первом запуске сами создают `.desktop` и иконку в `~/.local/share`. Arch-пакет ставит их в систему.
+
 ## Требования
 
 - Python 3.11+;

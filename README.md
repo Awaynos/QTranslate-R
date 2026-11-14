@@ -12,7 +12,7 @@
 
 **Экосистема:** [QMessages](https://github.com/Awaynos/QMessages) — быстрые заготовки для переписки.
 
-![Версия](https://img.shields.io/badge/версия-1.0.0-8fd6c8?style=flat-square)
+![Версия](https://img.shields.io/badge/версия-1.1.0-8fd6c8?style=flat-square)
 ![Лицензия](https://img.shields.io/badge/лицензия-PolyForm_Noncommercial-8f8f8f?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11-4b8bbe?style=flat-square&logo=python&logoColor=white)
 ![Qt](https://img.shields.io/badge/PySide6-Qt_6-41cd52?style=flat-square&logo=qt&logoColor=white)
@@ -121,7 +121,7 @@ python -m venv _local\.venv
 & "_local\.venv\Scripts\python.exe" run.py
 ```
 
-Готовая сборка для Windows есть: скачай `QTranslateRemake.exe` со страницы релизов — Python не нужен.
+Готовая сборка для Windows есть: скачай `QTranslateRemake-windows.exe` со страницы релизов — Python не нужен.
 
 ### Linux
 
@@ -142,7 +142,7 @@ _local/.venv/bin/python run.py
 packaging/linux/install.sh
 ```
 
-Готовых AppImage/PKGBUILD пока нет. Подробная инструкция, зависимости для Arch/Debian/Fedora, Wayland и Hyprland — в [docs/linux.md](docs/linux.md).
+Готовые Linux-сборки лежат в релизе `v1.1.0`: универсальный AppImage, `tar.gz` и пакет для Arch. Universal-сборка требует glibc 2.35+; Arch-пакет сам ставит зависимости. Подробная инструкция, зависимости для Arch/Debian/Fedora, Wayland и Hyprland — в [docs/linux.md](docs/linux.md).
 
 Настройки и история при запуске из исходников лежат в `_local\data` (Windows) или `_local/data` (Linux); у установленной версии — в профиле пользователя.
 
@@ -283,7 +283,7 @@ run.py          точка входа
 
 ## Версия и лицензия
 
-**1.0.0** — первый стабильный релиз.
+**1.1.0** — первый стабильный релиз с поддержкой Linux.
 Версия лежит в файле [`VERSION`](VERSION) и правится обычным блокнотом.
 
 Проект распространяется под лицензией **[PolyForm Noncommercial 1.0.0](LICENSE)** ([русский перевод](LICENSE.ru.md)) — это *source-available*, а не open source.
