@@ -82,6 +82,7 @@
   "settings.keyboard": "Keyboard & hotkeys",
   "settings.scope.local": "Local",
   "settings.scope.global": "Global",
+  "settings.hotkeys_wayland": "Global hotkeys are unavailable on Wayland. Bind --quick, --replace, and --ocr in your desktop.",
   "hotkey.press": "Press keys…",
   "hotkey.quick_translate": "Quick translate selection",
   "hotkey.replace_selection": "Replace selected text with translation",

@@ -119,6 +119,7 @@
   "settings.keyboard": "키보드 및 단축키",
   "settings.scope.local": "로컬",
   "settings.scope.global": "전역",
+  "settings.hotkeys_wayland": "Wayland에서는 전역 단축키를 사용할 수 없습니다. 데스크톱에서 --quick, --replace, --ocr을 바인딩하세요.",
   "hotkey.press": "키를 누르세요…",
   "hotkey.quick_translate": "선택 영역 빠른 번역",
   "hotkey.replace_selection": "선택한 텍스트를 번역으로 바꾸기",

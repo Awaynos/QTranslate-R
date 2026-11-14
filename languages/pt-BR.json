@@ -119,6 +119,7 @@
   "settings.keyboard": "Teclado e atalhos",
   "settings.scope.local": "Local",
   "settings.scope.global": "Global",
+  "settings.hotkeys_wayland": "Os atalhos globais não estão disponíveis no Wayland. Vincule --quick, --replace e --ocr no seu ambiente.",
   "hotkey.press": "Pressione as teclas…",
   "hotkey.quick_translate": "Tradução rápida da seleção",
   "hotkey.replace_selection": "Substituir o texto selecionado pela tradução",

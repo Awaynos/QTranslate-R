@@ -119,6 +119,7 @@
   "settings.keyboard": "Пернетақта және жарлықтар",
   "settings.scope.local": "Жергілікті",
   "settings.scope.global": "Ғаламдық",
+  "settings.hotkeys_wayland": "Wayland-та жаһандық хоткейлер қолжетімсіз. Ортада --quick, --replace және --ocr байланыстырыңыз.",
   "hotkey.press": "Пернелерді басыңыз…",
   "hotkey.quick_translate": "Таңдалғанды жылдам аудару",
   "hotkey.replace_selection": "Таңдалған мәтінді аудармамен алмастыру",

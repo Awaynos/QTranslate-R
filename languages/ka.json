@@ -119,6 +119,7 @@
   "settings.keyboard": "კლავიატურა და მალსახმობები",
   "settings.scope.local": "ლოკალური",
   "settings.scope.global": "გლობალური",
+  "settings.hotkeys_wayland": "Wayland-ზე გლობალური ჰოთკიბილები მიუწვდომელია. დააკავშირეთ --quick, --replace და --ocr.",
   "hotkey.press": "დააჭირეთ კლავიშებს…",
   "hotkey.quick_translate": "მონიშნულის სწრაფი თარგმნა",
   "hotkey.replace_selection": "მონიშნული ტექსტის თარგმანით ჩანაცვლება",

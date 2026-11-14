@@ -119,6 +119,7 @@
   "settings.keyboard": "キーボードとショートカット",
   "settings.scope.local": "ローカル",
   "settings.scope.global": "グローバル",
+  "settings.hotkeys_wayland": "Wayland ではグローバルホットキーを利用できません。デスクトップで --quick、--replace、--ocr をバインドしてください。",
   "hotkey.press": "キーを押してください…",
   "hotkey.quick_translate": "選択範囲をすばやく翻訳",
   "hotkey.replace_selection": "選択したテキストを翻訳で置き換え",

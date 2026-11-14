@@ -119,6 +119,7 @@
   "settings.keyboard": "Клавіятура і хоткеі",
   "settings.scope.local": "Лакальна",
   "settings.scope.global": "Глабальна",
+  "settings.hotkeys_wayland": "Глабальныя хоткеі недаступныя ў Wayland. Прывяжыце --quick, --replace і --ocr у сваім асяроддзі.",
   "hotkey.press": "Націсніце клавішы…",
   "hotkey.quick_translate": "Хуткі пераклад выдзеленага",
   "hotkey.replace_selection": "Замяніць выдзелены тэкст перакладам",

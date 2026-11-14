@@ -119,6 +119,7 @@
   "settings.keyboard": "键盘与快捷键",
   "settings.scope.local": "局部",
   "settings.scope.global": "全局",
+  "settings.hotkeys_wayland": "Wayland 不支持全局快捷键。请在桌面环境中绑定 --quick、--replace 和 --ocr。",
   "hotkey.press": "按下按键…",
   "hotkey.quick_translate": "快速翻译选中内容",
   "hotkey.replace_selection": "用翻译替换选中文本",

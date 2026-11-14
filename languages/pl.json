@@ -119,6 +119,7 @@
   "settings.keyboard": "Klawiatura i skróty",
   "settings.scope.local": "Lokalny",
   "settings.scope.global": "Globalny",
+  "settings.hotkeys_wayland": "Skróty globalne są niedostępne w Waylandzie. Przypisz --quick, --replace i --ocr w swoim środowisku.",
   "hotkey.press": "Naciśnij klawisze…",
   "hotkey.quick_translate": "Szybkie tłumaczenie zaznaczenia",
   "hotkey.replace_selection": "Zastąp zaznaczony tekst tłumaczeniem",

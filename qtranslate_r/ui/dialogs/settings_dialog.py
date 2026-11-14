@@ -24,6 +24,7 @@ from ...config.settings import Settings
 from ...domain.language import all_languages
 from ...hotkeys import ACTIONS, binding, scope
 from ...localization import available_languages, tr
+from ...platform import capabilities
 from ..sizing import lock_button_widths
 
 _THEMES = ("metal", "turquoise", "bronze", "light")
@@ -275,6 +276,7 @@ class SettingsDialog(QDialog):
 
     def _build_keyboard(self, settings: Settings) -> QWidget:
         page, form = self._page("settings.keyboard")
+        global_ok = capabilities().global_hotkeys
 
         self._hotkey_edits: dict[str, HotkeyEdit] = {}
         self._hotkey_scopes: dict[str, QComboBox] = {}
@@ -289,14 +291,24 @@ class SettingsDialog(QDialog):
 
             scope_combo = QComboBox()
             scope_combo.addItem(tr("settings.scope.local"), "local")
-            scope_combo.addItem(tr("settings.scope.global"), "global")
+            if global_ok:
+                scope_combo.addItem(tr("settings.scope.global"), "global")
             scope_combo.setFixedWidth(130)
-            self._set(scope_combo, scope(settings, action.id))
+            current = scope(settings, action.id)
+            if not global_ok and current == "global":
+                current = "local"
+            self._set(scope_combo, current)
             row.addWidget(scope_combo)
 
             form.addRow(tr(action.label_key), self._row(row))
             self._hotkey_edits[action.id] = edit
             self._hotkey_scopes[action.id] = scope_combo
+
+        if not global_ok:
+            note = QLabel(tr("settings.hotkeys_wayland"))
+            note.setWordWrap(True)
+            note.setObjectName("Hint")
+            form.addRow(note)
 
         return page
 
