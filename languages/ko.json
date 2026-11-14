@@ -170,7 +170,7 @@
   "settings.save": "저장",
   "settings.cancel": "취소",
 
-  "service.system_tts": "시스템 (Windows)",
+  "service.system_tts": "시스템 음성",
   "service.csv": "CSV 사전",
 
   "history.title": "번역 기록",
@@ -237,9 +237,9 @@
   "errors.file_not_found": "파일을 찾을 수 없습니다",
   "errors.docx_missing": "DOCX에는 python-docx가 필요합니다",
   "errors.pdf_missing": "PDF에는 pypdf가 필요합니다",
-  "errors.tts_windows": "시스템 음성은 Windows에서만 사용할 수 있습니다",
-  "errors.tts_no_voice": "{language} 언어의 Windows 음성이 설치되어 있지 않습니다",
-  "errors.playback_windows": "재생은 Windows에서만 사용할 수 있습니다",
+  "errors.tts_windows": "시스템 음성을 사용할 수 없습니다",
+  "errors.tts_no_voice": "{language} 언어의 음성이 설치되어 있지 않습니다",
+  "errors.playback_windows": "오디오를 재생할 수 없습니다",
   "errors.audio_playback": "오디오를 재생할 수 없습니다. ffmpeg, mpv 또는 pulseaudio-utils를 설치하세요.",
   "errors.reverso_pair": "Reverso는 이 언어 쌍을 지원하지 않습니다",
   "errors.speech": "음성 오류: {message}",

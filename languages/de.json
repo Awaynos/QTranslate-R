@@ -170,7 +170,7 @@
   "settings.save": "Speichern",
   "settings.cancel": "Abbrechen",
 
-  "service.system_tts": "System (Windows)",
+  "service.system_tts": "Systemsprache",
   "service.csv": "CSV-Wörterbuch",
 
   "history.title": "Übersetzungsverlauf",
@@ -237,9 +237,9 @@
   "errors.file_not_found": "Datei nicht gefunden",
   "errors.docx_missing": "Für DOCX wird python-docx benötigt",
   "errors.pdf_missing": "Für PDF wird pypdf benötigt",
-  "errors.tts_windows": "Die Systemsprachausgabe ist nur unter Windows verfügbar",
-  "errors.tts_no_voice": "Für {language} ist keine Windows-Stimme installiert",
-  "errors.playback_windows": "Die Wiedergabe ist nur unter Windows verfügbar",
+  "errors.tts_windows": "Systemsprache ist nicht verfügbar",
+  "errors.tts_no_voice": "Für {language} ist keine Stimme installiert",
+  "errors.playback_windows": "Audiowiedergabe ist nicht verfügbar",
   "errors.audio_playback": "Audiowiedergabe ist nicht verfügbar. Installieren Sie ffmpeg, mpv oder pulseaudio-utils.",
   "errors.reverso_pair": "Reverso unterstützt dieses Sprachpaar nicht",
   "errors.speech": "Fehler der Sprachausgabe: {message}",

@@ -161,7 +161,7 @@
   "settings.save": "Сохранить",
   "settings.cancel": "Отмена",
 
-  "service.system_tts": "Системный (Windows)",
+  "service.system_tts": "Системная озвучка",
   "service.csv": "CSV-словарь",
 
   "history.title": "История переводов",
@@ -228,9 +228,9 @@
   "errors.file_not_found": "Файл не найден",
   "errors.docx_missing": "Для DOCX нужен пакет python-docx",
   "errors.pdf_missing": "Для PDF нужен пакет pypdf",
-  "errors.tts_windows": "Системная озвучка доступна только на Windows",
-  "errors.tts_no_voice": "Для языка {language} не установлен голос Windows",
-  "errors.playback_windows": "Воспроизведение доступно только на Windows",
+  "errors.tts_windows": "Системная озвучка недоступна",
+  "errors.tts_no_voice": "Для языка {language} не установлен голос",
+  "errors.playback_windows": "Воспроизведение аудио недоступно",
   "errors.audio_playback": "Воспроизведение аудио недоступно. Установите ffmpeg, mpv или pulseaudio-utils.",
   "errors.reverso_pair": "Reverso не поддерживает эту пару языков",
   "errors.speech": "Ошибка озвучки: {message}",

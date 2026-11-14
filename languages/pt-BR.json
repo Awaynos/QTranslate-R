@@ -170,7 +170,7 @@
   "settings.save": "Salvar",
   "settings.cancel": "Cancelar",
 
-  "service.system_tts": "Sistema (Windows)",
+  "service.system_tts": "Voz do sistema",
   "service.csv": "Dicionário CSV",
 
   "history.title": "Histórico de traduções",
@@ -237,9 +237,9 @@
   "errors.file_not_found": "Arquivo não encontrado",
   "errors.docx_missing": "Para DOCX é necessário o python-docx",
   "errors.pdf_missing": "Para PDF é necessário o pypdf",
-  "errors.tts_windows": "A voz do sistema está disponível apenas no Windows",
-  "errors.tts_no_voice": "Nenhuma voz do Windows está instalada para {language}",
-  "errors.playback_windows": "A reprodução está disponível apenas no Windows",
+  "errors.tts_windows": "A voz do sistema não está disponível",
+  "errors.tts_no_voice": "Nenhuma voz está instalada para {language}",
+  "errors.playback_windows": "A reprodução de áudio não está disponível",
   "errors.audio_playback": "A reprodução de áudio não está disponível. Instale ffmpeg, mpv ou pulseaudio-utils.",
   "errors.reverso_pair": "O Reverso não oferece suporte a este par de idiomas",
   "errors.speech": "Erro de voz: {message}",

@@ -64,15 +64,14 @@ def system_language() -> str:
     code = _ui_language()
     if code:
         return code
-    for getter in (lambda: locale.getdefaultlocale()[0], lambda: locale.getlocale()[0]):
-        try:
-            name = getter() or ""
-        except (ValueError, TypeError):
-            name = ""
-        if name:
-            candidate = name.split("_")[0].split("-")[0].lower()
-            if 2 <= len(candidate) <= 3 and candidate.isalpha():
-                return candidate
+    try:
+        name = locale.getlocale()[0] or ""
+    except (ValueError, TypeError):
+        name = ""
+    if name:
+        candidate = name.split("_")[0].split("-")[0].lower()
+        if 2 <= len(candidate) <= 3 and candidate.isalpha():
+            return candidate
     return FALLBACK
 
 

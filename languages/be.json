@@ -170,7 +170,7 @@
   "settings.save": "Захаваць",
   "settings.cancel": "Адмена",
 
-  "service.system_tts": "Сістэмная (Windows)",
+  "service.system_tts": "Сістэмная агучка",
   "service.csv": "CSV-слоўнік",
 
   "history.title": "Гісторыя перакладаў",
@@ -237,9 +237,9 @@
   "errors.file_not_found": "Файл не знойдзены",
   "errors.docx_missing": "Для DOCX патрэбны python-docx",
   "errors.pdf_missing": "Для PDF патрэбны pypdf",
-  "errors.tts_windows": "Сістэмная агучка даступна толькі ў Windows",
-  "errors.tts_no_voice": "Для мовы {language} не ўсталяваны голас Windows",
-  "errors.playback_windows": "Прайграванне даступна толькі ў Windows",
+  "errors.tts_windows": "Сістэмная агучка недаступная",
+  "errors.tts_no_voice": "Для мовы {language} не ўсталяваны голас",
+  "errors.playback_windows": "Прайграванне аўдыя недаступнае",
   "errors.audio_playback": "Прайграванне аўдыя недаступнае. Усталюйце ffmpeg, mpv або pulseaudio-utils.",
   "errors.reverso_pair": "Reverso не падтрымлівае гэту пару моў",
   "errors.speech": "Памылка агучкі: {message}",

@@ -170,7 +170,7 @@
   "settings.save": "保存",
   "settings.cancel": "取消",
 
-  "service.system_tts": "系统（Windows）",
+  "service.system_tts": "系统语音",
   "service.csv": "CSV 词典",
 
   "history.title": "翻译历史",
@@ -237,9 +237,9 @@
   "errors.file_not_found": "未找到文件",
   "errors.docx_missing": "DOCX 需要 python-docx",
   "errors.pdf_missing": "PDF 需要 pypdf",
-  "errors.tts_windows": "系统语音仅在 Windows 上可用",
-  "errors.tts_no_voice": "未安装 {language} 的 Windows 语音",
-  "errors.playback_windows": "播放仅在 Windows 上可用",
+  "errors.tts_windows": "系统语音不可用",
+  "errors.tts_no_voice": "未安装 {language} 的语音",
+  "errors.playback_windows": "音频播放不可用",
   "errors.audio_playback": "音频播放不可用。请安装 ffmpeg、mpv 或 pulseaudio-utils。",
   "errors.reverso_pair": "Reverso 不支持该语言对",
   "errors.speech": "语音错误：{message}",

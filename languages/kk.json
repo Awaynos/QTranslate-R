@@ -170,7 +170,7 @@
   "settings.save": "Сақтау",
   "settings.cancel": "Болдырмау",
 
-  "service.system_tts": "Жүйелік (Windows)",
+  "service.system_tts": "Жүйелік дыбыс",
   "service.csv": "CSV сөздігі",
 
   "history.title": "Аударма тарихы",
@@ -237,9 +237,9 @@
   "errors.file_not_found": "Файл табылмады",
   "errors.docx_missing": "DOCX үшін python-docx қажет",
   "errors.pdf_missing": "PDF үшін pypdf қажет",
-  "errors.tts_windows": "Жүйелік дауыс тек Windows-та қолжетімді",
-  "errors.tts_no_voice": "{language} үшін Windows дауысы орнатылмаған",
-  "errors.playback_windows": "Ойнату тек Windows-та қолжетімді",
+  "errors.tts_windows": "Жүйелік дыбыс қолжетімсіз",
+  "errors.tts_no_voice": "{language} тілі үшін дауыс орнатылмаған",
+  "errors.playback_windows": "Аудио ойнату қолжетімсіз",
   "errors.audio_playback": "Аудио ойнату қолжетімсіз. ffmpeg, mpv немесе pulseaudio-utils орнатыңыз.",
   "errors.reverso_pair": "Reverso бұл тіл жұбын қолдамайды",
   "errors.speech": "Дауыс қатесі: {message}",

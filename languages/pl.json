@@ -170,7 +170,7 @@
   "settings.save": "Zapisz",
   "settings.cancel": "Anuluj",
 
-  "service.system_tts": "Systemowy (Windows)",
+  "service.system_tts": "Mowa systemowa",
   "service.csv": "Słownik CSV",
 
   "history.title": "Historia tłumaczeń",
@@ -237,9 +237,9 @@
   "errors.file_not_found": "Nie znaleziono pliku",
   "errors.docx_missing": "Do DOCX wymagany jest python-docx",
   "errors.pdf_missing": "Do PDF wymagany jest pypdf",
-  "errors.tts_windows": "Systemowa mowa jest dostępna tylko w Windows",
-  "errors.tts_no_voice": "Dla języka {language} nie zainstalowano głosu Windows",
-  "errors.playback_windows": "Odtwarzanie jest dostępne tylko w Windows",
+  "errors.tts_windows": "Mowa systemowa jest niedostępna",
+  "errors.tts_no_voice": "Dla języka {language} nie zainstalowano głosu",
+  "errors.playback_windows": "Odtwarzanie dźwięku jest niedostępne",
   "errors.audio_playback": "Odtwarzanie dźwięku jest niedostępne. Zainstaluj ffmpeg, mpv lub pulseaudio-utils.",
   "errors.reverso_pair": "Reverso nie obsługuje tej pary języków",
   "errors.speech": "Błąd mowy: {message}",
