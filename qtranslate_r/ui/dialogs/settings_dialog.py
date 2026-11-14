@@ -291,11 +291,11 @@ class SettingsDialog(QDialog):
 
             scope_combo = QComboBox()
             scope_combo.addItem(tr("settings.scope.local"), "local")
-            if global_ok:
+            if global_ok or action.scope == "global":
                 scope_combo.addItem(tr("settings.scope.global"), "global")
             scope_combo.setFixedWidth(130)
             current = scope(settings, action.id)
-            if not global_ok and current == "global":
+            if not global_ok and current == "global" and action.scope != "global":
                 current = "local"
             self._set(scope_combo, current)
             row.addWidget(scope_combo)
