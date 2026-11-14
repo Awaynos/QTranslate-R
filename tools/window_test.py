@@ -8,7 +8,48 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from PySide6.QtCore import Qt  # noqa: E402
+
+from qtranslate_r.platform import window as platform_window  # noqa: E402
 from qtranslate_r.platform.window import cursor_position  # noqa: E402
+
+
+def check_system_move() -> None:
+    from qtranslate_r.platform.linux import window as linux_window
+
+    class Handle:
+        def startSystemMove(self) -> bool:
+            return True
+
+        def startSystemResize(self, edges) -> bool:
+            return edges == Qt.Edge.LeftEdge
+
+    class Widget:
+        def windowHandle(self):
+            return Handle()
+
+    class WaylandApp:
+        @staticmethod
+        def platformName() -> str:
+            return "wayland"
+
+    class X11App:
+        @staticmethod
+        def platformName() -> str:
+            return "xcb"
+
+    original = linux_window.QGuiApplication
+    try:
+        linux_window.QGuiApplication = WaylandApp
+        assert platform_window.start_system_move(Widget())
+        assert platform_window.start_system_resize(Widget(), Qt.Edge.LeftEdge)
+        assert not platform_window.start_system_resize(Widget(), Qt.Edge.RightEdge)
+        linux_window.QGuiApplication = X11App
+        assert not platform_window.start_system_move(Widget())
+    finally:
+        linux_window.QGuiApplication = original
+    print("system move: OK")
+    print("system resize: OK")
 
 
 def main() -> int:
@@ -23,6 +64,7 @@ def main() -> int:
     if position is not None:
         assert len(position) == 2
         assert all(isinstance(value, int) for value in position)
+    check_system_move()
     print("OK")
     return 0
 

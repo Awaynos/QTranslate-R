@@ -85,22 +85,43 @@ class _TitleBar(QFrame):
         super().__init__(window)
         self._window = window
         self._drag_offset = None
+        self._press_position = None
+        self._moving = False
 
     def mousePressEvent(self, event) -> None:  # noqa: N802 — метод Qt
         if event.button() == Qt.MouseButton.LeftButton:
-            self._drag_offset = event.globalPosition().toPoint() - self._window.frameGeometry().topLeft()
+            self._press_position = event.globalPosition().toPoint()
+            self._drag_offset = self._press_position - self._window.frameGeometry().topLeft()
+            self._moving = False
             event.accept()
 
     def mouseMoveEvent(self, event) -> None:  # noqa: N802 — метод Qt
-        if self._drag_offset is None or not (event.buttons() & Qt.MouseButton.LeftButton):
+        if self._press_position is None or not (event.buttons() & Qt.MouseButton.LeftButton):
+            return
+
+        position = event.globalPosition().toPoint()
+        if not self._moving:
+            distance = (position - self._press_position).manhattanLength()
+            if distance < QApplication.startDragDistance():
+                return
+            self._moving = True
+            # На Wayland move() игнорируется — отдаём перетаскивание композитору.
+            if platform_window.start_system_move(self._window):
+                self._press_position = None
+                self._drag_offset = None
+                return
+
+        if self._drag_offset is None:
             return
         if self._window.isMaximized():
             self._window.showNormal()
-            self._drag_offset = event.globalPosition().toPoint() - self._window.frameGeometry().topLeft()
-        self._window.move(event.globalPosition().toPoint() - self._drag_offset)
+            self._drag_offset = position - self._window.frameGeometry().topLeft()
+        self._window.move(position - self._drag_offset)
 
     def mouseReleaseEvent(self, event) -> None:  # noqa: N802 — метод Qt
+        self._press_position = None
         self._drag_offset = None
+        self._moving = False
 
     def mouseDoubleClickEvent(self, event) -> None:  # noqa: N802 — метод Qt
         self._window.toggle_maximize()
@@ -149,6 +170,9 @@ class MainWindow(QMainWindow):
         self._tray: QSystemTrayIcon | None = None
         self._splitter = None
         self._thick_frame = False
+        self._resize_margin = 6
+        self._edge_widget = None
+        self._edge_cursor = None
 
         self._debounce = QTimer(self)
         self._debounce.setSingleShot(True)
@@ -176,6 +200,92 @@ class MainWindow(QMainWindow):
         self._app.aboutToQuit.connect(self._stop_hotkeys)
         self._speech.playingChanged.connect(self._on_speech_state)
         self._speech.errorOccurred.connect(lambda msg: self._status.showMessage(msg, 4000))
+        self._app.installEventFilter(self)
+        self._enable_mouse_tracking()
+
+
+    def _enable_mouse_tracking(self) -> None:
+        self.setMouseTracking(True)
+        for widget in self.findChildren(QWidget):
+            widget.setMouseTracking(True)
+
+
+    def _resize_edges(self, position):
+        if self.isMaximized() or self.isFullScreen():
+            return None
+        margin = self._resize_margin
+        x, y = position.x(), position.y()
+        width, height = self.width(), self.height()
+        edges = Qt.Edge(0)
+        if x <= margin:
+            edges |= Qt.Edge.LeftEdge
+        elif x >= width - margin - 1:
+            edges |= Qt.Edge.RightEdge
+        if y <= margin:
+            edges |= Qt.Edge.TopEdge
+        elif y >= height - margin - 1:
+            edges |= Qt.Edge.BottomEdge
+        return edges if edges else None
+
+
+    def _resize_cursor(self, edges):
+        left = bool(edges & Qt.Edge.LeftEdge)
+        right = bool(edges & Qt.Edge.RightEdge)
+        top = bool(edges & Qt.Edge.TopEdge)
+        bottom = bool(edges & Qt.Edge.BottomEdge)
+        if (left and top) or (right and bottom):
+            return Qt.CursorShape.SizeFDiagCursor
+        if (right and top) or (left and bottom):
+            return Qt.CursorShape.SizeBDiagCursor
+        if left or right:
+            return Qt.CursorShape.SizeHorCursor
+        if top or bottom:
+            return Qt.CursorShape.SizeVerCursor
+        return Qt.CursorShape.ArrowCursor
+
+
+    def _restore_edge_cursor(self) -> None:
+        widget = self._edge_widget
+        cursor = self._edge_cursor
+        self._edge_widget = None
+        self._edge_cursor = None
+        if widget is None:
+            return
+        try:
+            widget.setCursor(cursor)
+        except RuntimeError:
+            pass
+
+
+    def _apply_resize_cursor(self, widget, edges) -> None:
+        if edges:
+            if self._edge_widget is not widget:
+                self._restore_edge_cursor()
+                self._edge_widget = widget
+                self._edge_cursor = widget.cursor()
+            try:
+                widget.setCursor(self._resize_cursor(edges))
+            except RuntimeError:
+                pass
+        elif self._edge_widget is widget:
+            self._restore_edge_cursor()
+
+
+    def eventFilter(self, obj, event) -> bool:  # noqa: N802 — метод Qt
+        if not isinstance(obj, QWidget) or obj.window() is not self:
+            return super().eventFilter(obj, event)
+        kind = event.type()
+        if kind in (QEvent.Type.MouseMove, QEvent.Type.HoverMove):
+            position = obj.mapTo(self, event.position().toPoint())
+            self._apply_resize_cursor(obj, self._resize_edges(position))
+        elif kind == QEvent.Type.MouseButtonPress:
+            if event.button() == Qt.MouseButton.LeftButton:
+                position = obj.mapTo(self, event.position().toPoint())
+                edges = self._resize_edges(position)
+                if edges and platform_window.start_system_resize(self, edges):
+                    self._apply_resize_cursor(obj, None)
+                    return True
+        return super().eventFilter(obj, event)
 
 
     def _build_ui(self) -> None:

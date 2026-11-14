@@ -3,6 +3,14 @@
 from __future__ import annotations
 
 
+def start_system_move(window) -> bool:
+    return False
+
+
+def start_system_resize(window, edges) -> bool:
+    return False
+
+
 def apply_window_icon(window, ico) -> None:
     pass
 

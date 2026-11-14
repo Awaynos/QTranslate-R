@@ -11,6 +11,8 @@ if sys.platform == "win32":
         enable_native_resize,
         move_window,
         native_event,
+        start_system_move,
+        start_system_resize,
     )
 elif sys.platform == "darwin":
     from .macos.window import (
@@ -19,6 +21,8 @@ elif sys.platform == "darwin":
         enable_native_resize,
         move_window,
         native_event,
+        start_system_move,
+        start_system_resize,
     )
 else:
     from .linux.window import (
@@ -27,6 +31,8 @@ else:
         enable_native_resize,
         move_window,
         native_event,
+        start_system_move,
+        start_system_resize,
     )
 
 __all__ = [
@@ -35,4 +41,6 @@ __all__ = [
     "enable_native_resize",
     "move_window",
     "native_event",
+    "start_system_move",
+    "start_system_resize",
 ]

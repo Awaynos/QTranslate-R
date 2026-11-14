@@ -6,6 +6,8 @@ import re
 import subprocess
 import time
 
+from PySide6.QtGui import QGuiApplication
+
 from .env import session_type, tool_path
 
 _CURSOR = re.compile(r"^\s*(-?\d+)\s*,\s*(-?\d+)\s*$")
@@ -37,6 +39,30 @@ def move_window(title: str, x: int, y: int) -> bool:
     except (OSError, subprocess.TimeoutExpired):
         return False
     return result.returncode == 0
+
+
+def start_system_move(window) -> bool:
+    """Начать перетаскивание средствами Wayland: move() там игнорируется."""
+    if not QGuiApplication.platformName().startswith("wayland"):
+        return False
+    handle = window.windowHandle()
+    if handle is None:
+        return False
+    try:
+        return bool(handle.startSystemMove())
+    except (AttributeError, RuntimeError):
+        return False
+
+
+def start_system_resize(window, edges) -> bool:
+    """Начать ресайз средствами композитора."""
+    handle = window.windowHandle()
+    if handle is None:
+        return False
+    try:
+        return bool(handle.startSystemResize(edges))
+    except (AttributeError, RuntimeError):
+        return False
 
 
 def apply_window_icon(window, ico) -> None:
