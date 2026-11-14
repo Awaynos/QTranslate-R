@@ -177,7 +177,7 @@
   "ocr.recognizing": "Recognizing text…",
   "ocr.empty": "No text found in the selected area",
   "ocr.failed": "Could not recognize text: {message}",
-  "ocr.no_language": "No OCR language is installed in Windows",
+  "ocr.no_language": "No OCR language is installed",
   "ocr.unavailable": "Text recognition is unavailable",
 
   "errors.network": "No connection to the service",

@@ -214,7 +214,7 @@
   "ocr.recognizing": "Мәтін танылуда…",
   "ocr.empty": "Таңдалған аймақтан мәтін табылмады",
   "ocr.failed": "Мәтінді тану мүмкін болмады: {message}",
-  "ocr.no_language": "Windows-та OCR тілі орнатылмаған",
+  "ocr.no_language": "OCR тілі орнатылмаған",
   "ocr.unavailable": "Мәтінді тану қолжетімсіз",
 
   "errors.network": "Қызметке қосылу жоқ",

@@ -35,7 +35,13 @@ def config_targets() -> tuple[Path, Path, str]:
         return conf, conf, "conf"
     lua = base / "hyprland.lua"
     if lua.is_file():
-        return base / "custom" / "keybinds.lua", base / "custom" / "rules.lua", "lua"
+        custom = base / "custom"
+        if custom.is_dir():
+            return custom / "keybinds.lua", custom / "rules.lua", "lua"
+        user = base / "user.lua"
+        if user.is_file():
+            return user, user, "lua"
+        return custom / "keybinds.lua", custom / "rules.lua", "lua"
     return conf, conf, "conf"
 
 
@@ -109,6 +115,10 @@ def _append(path: Path, kind: str, marker: str, block: str) -> bool:
     return True
 
 
+def _binds_present(text: str) -> bool:
+    return "hl.bind" in text and all(argument in text for _, argument, _ in BINDS)
+
+
 def install(
     path: Path | None = None,
     command: str | None = None,
@@ -117,6 +127,10 @@ def install(
     if path is None:
         path, _, kind = config_targets()
     kind = kind or ("lua" if path.suffix == ".lua" else "conf")
+    if path.is_file():
+        text = path.read_text(encoding="utf-8")
+        if BINDS_MARKER not in text and _binds_present(text):
+            return path, False
     command = command or default_command()
     return path, _append(path, kind, BINDS_MARKER, _binds_block(command, kind))
 

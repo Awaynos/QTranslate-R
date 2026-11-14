@@ -61,13 +61,16 @@ def _install_hyprland_binds() -> int:
         print(f"Hyprland integration already present: {path}")
         return 0
 
-    print(f"Hyprland binds: {path}")
-    if rules_path != path:
+    if changed:
+        print(f"Hyprland binds: {path}")
+    if rules_changed:
         print(f"Hyprland rules: {rules_path}")
     if reload_hyprland():
         print("Hyprland reloaded")
     else:
         print("Run 'hyprctl reload' to apply the changes")
+    if rules_changed:
+        print("Restart QTranslate Remake so window rules apply to new popups")
     return 0
 
 

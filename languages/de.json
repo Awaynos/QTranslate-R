@@ -214,7 +214,7 @@
   "ocr.recognizing": "Text wird erkannt…",
   "ocr.empty": "Im ausgewählten Bereich wurde kein Text gefunden",
   "ocr.failed": "Text konnte nicht erkannt werden: {message}",
-  "ocr.no_language": "In Windows ist keine OCR-Sprache installiert",
+  "ocr.no_language": "Keine OCR-Sprache installiert",
   "ocr.unavailable": "Texterkennung ist nicht verfügbar",
 
   "errors.network": "Keine Verbindung zum Dienst",

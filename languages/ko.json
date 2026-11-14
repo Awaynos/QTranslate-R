@@ -214,7 +214,7 @@
   "ocr.recognizing": "텍스트 인식 중…",
   "ocr.empty": "선택한 영역에서 텍스트를 찾지 못했습니다",
   "ocr.failed": "텍스트를 인식하지 못했습니다: {message}",
-  "ocr.no_language": "Windows에 OCR 언어가 설치되어 있지 않습니다",
+  "ocr.no_language": "OCR 언어가 설치되어 있지 않습니다",
   "ocr.unavailable": "텍스트 인식을 사용할 수 없습니다",
 
   "errors.network": "서비스에 연결할 수 없습니다",

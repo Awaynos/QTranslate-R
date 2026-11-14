@@ -9,6 +9,7 @@ if sys.platform == "win32":
         apply_window_icon,
         cursor_position,
         enable_native_resize,
+        move_window,
         native_event,
     )
 elif sys.platform == "darwin":
@@ -16,6 +17,7 @@ elif sys.platform == "darwin":
         apply_window_icon,
         cursor_position,
         enable_native_resize,
+        move_window,
         native_event,
     )
 else:
@@ -23,6 +25,7 @@ else:
         apply_window_icon,
         cursor_position,
         enable_native_resize,
+        move_window,
         native_event,
     )
 
@@ -30,5 +33,6 @@ __all__ = [
     "apply_window_icon",
     "cursor_position",
     "enable_native_resize",
+    "move_window",
     "native_event",
 ]

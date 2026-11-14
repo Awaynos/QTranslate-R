@@ -77,6 +77,7 @@ def check_detection(directory: Path) -> None:
     base = directory / "config" / "hypr"
     base.mkdir(parents=True)
     (base / "hyprland.lua").write_text("", encoding="utf-8")
+    (base / "custom").mkdir()
     old = os.environ.get("XDG_CONFIG_HOME")
     os.environ["XDG_CONFIG_HOME"] = str(directory / "config")
     try:
@@ -84,11 +85,36 @@ def check_detection(directory: Path) -> None:
         assert kind == "lua"
         assert binds == base / "custom" / "keybinds.lua"
         assert rules == base / "custom" / "rules.lua"
+
+        (base / "custom").rmdir()
+        (base / "user.lua").write_text("", encoding="utf-8")
+        binds, rules, kind = config_targets()
+        assert kind == "lua"
+        assert binds == base / "user.lua"
+        assert rules == base / "user.lua"
     finally:
         if old is None:
             os.environ.pop("XDG_CONFIG_HOME", None)
         else:
             os.environ["XDG_CONFIG_HOME"] = old
+
+
+def check_existing_binds(directory: Path) -> None:
+    directory.mkdir(parents=True)
+    path = directory / "user.lua"
+    path.write_text(
+        'hl.bind("CTRL + ALT + Q", hl.dsp.exec_cmd("qtr --quick"))\n'
+        'hl.bind("CTRL + ALT + 1", hl.dsp.exec_cmd("qtr --replace"))\n'
+        'hl.bind("CTRL + ALT + I", hl.dsp.exec_cmd("qtr --ocr"))\n',
+        encoding="utf-8",
+    )
+    _, changed = install(path, "/usr/bin/qtranslate-remake", kind="lua")
+    assert not changed
+    _, changed = install_rules(path, kind="lua")
+    assert changed
+    text = path.read_text(encoding="utf-8")
+    assert text.count(RULES_MARKER) == 1
+    assert text.count(BINDS_MARKER) == 0
 
 
 def main() -> int:
@@ -97,6 +123,7 @@ def main() -> int:
         check_conf(directory / "conf")
         check_lua(directory / "lua")
         check_detection(directory / "detect")
+        check_existing_binds(directory / "existing")
 
     print("hyprland rules and binds: OK")
     print("OK")

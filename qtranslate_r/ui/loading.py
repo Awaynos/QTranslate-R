@@ -48,6 +48,8 @@ class CursorLoadingIndicator(QWidget):
         self._logo = logo_pixmap(24)
         self._angle = 0
         self._shown_at = 0.0
+        self._target = (0, 0)
+        self._external_move_at = 0.0
         self._hide_timer: QTimer | None = None
 
         self._spin = QTimer(self)
@@ -69,6 +71,7 @@ class CursorLoadingIndicator(QWidget):
         self._shown_at = time.monotonic()
         self.show()
         self.raise_()
+        QTimer.singleShot(30, lambda: platform_window.move_window("QTranslate Loading", *self._target))
         self._spin.start()
         self._follow.start()
 
@@ -108,6 +111,11 @@ class CursorLoadingIndicator(QWidget):
         x = min(max(point.x() + 16, area.left()), area.right() - self.width())
         y = min(max(point.y() + 20, area.top()), area.bottom() - self.height())
         self.move(x, y)
+        self._target = (x, y)
+        now = time.monotonic()
+        if now - self._external_move_at >= 0.1:
+            self._external_move_at = now
+            platform_window.move_window("QTranslate Loading", x, y)
 
     def paintEvent(self, event) -> None:  # noqa: N802 — метод Qt
         colors = palette(self._settings.theme)

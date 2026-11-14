@@ -214,7 +214,7 @@
   "ocr.recognizing": "文字を認識しています…",
   "ocr.empty": "選択した範囲に文字が見つかりません",
   "ocr.failed": "文字を認識できませんでした: {message}",
-  "ocr.no_language": "Windows に OCR 言語がインストールされていません",
+  "ocr.no_language": "OCR 言語がインストールされていません",
   "ocr.unavailable": "文字認識を利用できません",
 
   "errors.network": "サービスに接続できません",

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QPoint, Qt, Signal
+from PySide6.QtCore import QPoint, Qt, QTimer, Signal
 from PySide6.QtGui import QCursor, QGuiApplication, QPixmap
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
@@ -174,6 +174,7 @@ class QuickTranslatePopup(QWidget):
         self.show()
         self.raise_()
         self.activateWindow()
+        QTimer.singleShot(30, lambda: platform_window.move_window("QTranslate Popup", x, y))
 
     def keyPressEvent(self, event) -> None:  # noqa: N802 — метод Qt
         if event.key() == Qt.Key.Key_Escape:

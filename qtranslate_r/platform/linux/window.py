@@ -15,6 +15,30 @@ _cached_at = 0.0
 _cached_position: tuple[int, int] | None = None
 
 
+def _regex_escape(value: str) -> str:
+    return re.sub(r"([\\.^$|?*+()\[\]{}])", r"\\\1", value)
+
+
+def move_window(title: str, x: int, y: int) -> bool:
+    if session_type() == "x11" or not tool_path("hyprctl"):
+        return False
+    selector = f"title:^({_regex_escape(title)})$"
+    command = (
+        f'hl.dsp.window.move({{ x = {int(x)}, y = {int(y)}, '
+        f'window = "{selector}" }})'
+    )
+    try:
+        result = subprocess.run(
+            ["hyprctl", "dispatch", command],
+            capture_output=True,
+            timeout=1.5,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0
+
+
 def apply_window_icon(window, ico) -> None:
     pass
 

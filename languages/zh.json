@@ -214,7 +214,7 @@
   "ocr.recognizing": "正在识别文字…",
   "ocr.empty": "所选区域未找到文字",
   "ocr.failed": "无法识别文字：{message}",
-  "ocr.no_language": "Windows 未安装 OCR 语言",
+  "ocr.no_language": "未安装 OCR 语言包",
   "ocr.unavailable": "文字识别不可用",
 
   "errors.network": "无法连接到服务",

@@ -94,16 +94,20 @@ def pick_language(preferred: str = "") -> str:
     if not languages:
         raise OcrError(tr("ocr.no_language"), kind="language")
 
-    candidates = []
-    if preferred:
-        candidates.append(language_tag(preferred))
-    candidates.append("eng")
-
     lowered = {item.lower(): item for item in languages}
-    for candidate in candidates:
-        if candidate.lower() in lowered:
-            return lowered[candidate.lower()]
-    return languages[0]
+    if preferred:
+        tag = language_tag(preferred)
+        candidate = lowered.get(tag.lower())
+        if candidate is not None:
+            return candidate
+        base = tag.split("_")[0].lower()
+        candidate = lowered.get(base)
+        if candidate is not None:
+            return candidate
+        raise OcrError(tr("ocr.no_language"), kind="language")
+
+    candidate = lowered.get("eng")
+    return candidate if candidate is not None else languages[0]
 
 
 def recognize(image_path: Path | str, preferred: str = "") -> tuple[str, str]:

@@ -112,3 +112,7 @@ def native_event(window, event_type, message):
 
 def cursor_position() -> tuple[int, int] | None:
     return None
+
+
+def move_window(title: str, x: int, y: int) -> bool:
+    return False
