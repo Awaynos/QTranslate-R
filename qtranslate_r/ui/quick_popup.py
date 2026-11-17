@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from PySide6.QtCore import QPoint, Qt, QTimer, Signal
 from PySide6.QtGui import QCursor, QGuiApplication, QPixmap
-from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QScrollArea,
+    QVBoxLayout,
+    QWidget,
+)
 
 from .. import __app_name__
 from ..config.paths import app_icon_file
@@ -15,7 +23,7 @@ from ..platform import window as platform_window
 from .sizing import lock_button_widths
 
 _WIDTH = 440
-_MAX_BODY = 320
+_MAX_BODY = 360
 
 
 def _cursor_point() -> QPoint:
@@ -105,7 +113,19 @@ class QuickTranslatePopup(QWidget):
         self._body.setObjectName("CardBody")
         self._body.setWordWrap(True)
         self._body.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        inner.addWidget(self._body)
+
+        self._body_scroll = QScrollArea()
+        self._body_scroll.setObjectName("CardScroll")
+        self._body_scroll.setWidgetResizable(True)
+        self._body_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self._body_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self._body_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self._body_scroll.setStyleSheet(
+            "QScrollArea{background:transparent;border:none;}"
+            "QScrollArea > QWidget > QWidget{background:transparent;}"
+        )
+        self._body_scroll.setWidget(self._body)
+        inner.addWidget(self._body_scroll)
 
         footer = QHBoxLayout()
         footer.addStretch(1)
@@ -163,7 +183,17 @@ class QuickTranslatePopup(QWidget):
         self._body.style().unpolish(self._body)
         self._body.style().polish(self._body)
 
+    def _fit_body(self) -> None:
+        width = _WIDTH - 42
+        self._body.setFixedWidth(width)
+        height = self._body.heightForWidth(width)
+        if height <= 0:
+            height = self._body.sizeHint().height()
+        self._body_scroll.setFixedHeight(min(max(height, 24), _MAX_BODY))
+        self._body_scroll.verticalScrollBar().setValue(0)
+
     def _show_near_cursor(self) -> None:
+        self._fit_body()
         self.adjustSize()
         pos = _cursor_point()
         screen = QGuiApplication.screenAt(pos) or QGuiApplication.primaryScreen()

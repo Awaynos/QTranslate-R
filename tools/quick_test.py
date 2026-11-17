@@ -26,6 +26,10 @@ SAMPLE = TranslationResult(
     detected_source="en", elapsed_ms=520,
 )
 ERROR = TranslationResult("libretranslate", "LibreTranslate", error="Нужен ключ доступа")
+LONG = TranslationResult(
+    "google", "Google", text="Длинный перевод. " * 120,
+    detected_source="en", elapsed_ms=520,
+)
 
 
 def main() -> int:
@@ -41,6 +45,11 @@ def main() -> int:
         popup.show_result(SAMPLE)
         app.processEvents()
         popup.grab().save(str(OUT / f"quick_{theme}_result.png"))
+
+        popup.show_result(LONG)
+        app.processEvents()
+        assert popup._body_scroll.verticalScrollBar().maximum() > 0  # noqa: SLF001
+        popup.grab().save(str(OUT / f"quick_{theme}_long.png"))
 
         popup.show_error(ERROR.error)
         app.processEvents()
