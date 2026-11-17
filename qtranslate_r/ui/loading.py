@@ -66,6 +66,9 @@ class CursorLoadingIndicator(QWidget):
             self._hide_timer.stop()
             self._hide_timer = None
         if self.isVisible():
+            self._spin.start()
+            self._follow.start()
+            self._move_to_cursor()
             return
         self._move_to_cursor()
         self._shown_at = time.monotonic()
@@ -77,6 +80,7 @@ class CursorLoadingIndicator(QWidget):
 
     def hide_loading(self) -> None:
         if not self.isVisible():
+            self._stop_motion()
             return
         elapsed = (time.monotonic() - self._shown_at) * 1000
         if elapsed >= _MIN_VISIBLE_MS:
@@ -90,12 +94,16 @@ class CursorLoadingIndicator(QWidget):
         self._hide_timer.timeout.connect(self._hide_now)
         self._hide_timer.start()
 
-    def _hide_now(self) -> None:
+    def _stop_motion(self) -> None:
         if self._hide_timer is not None:
             self._hide_timer.stop()
             self._hide_timer = None
         self._spin.stop()
         self._follow.stop()
+
+    def _hide_now(self) -> None:
+        self._stop_motion()
+        self._shown_at = 0.0
         self.hide()
 
 
@@ -104,9 +112,15 @@ class CursorLoadingIndicator(QWidget):
         self.update()
 
     def _move_to_cursor(self) -> None:
+        if not self.isVisible():
+            self._stop_motion()
+            return
         position = platform_window.cursor_position()
         point = QPoint(*position) if position else QCursor.pos()
         screen = QGuiApplication.screenAt(point) or QGuiApplication.primaryScreen()
+        if screen is None:
+            self._stop_motion()
+            return
         area = screen.availableGeometry()
         x = min(max(point.x() + 16, area.left()), area.right() - self.width())
         y = min(max(point.y() + 20, area.top()), area.bottom() - self.height())

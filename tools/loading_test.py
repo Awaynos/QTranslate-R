@@ -40,6 +40,15 @@ def main() -> int:
     app.processEvents()
     print("скрыт:", not indicator.isVisible())
 
+    indicator.show_loading()
+    app.processEvents()
+    indicator.hide()
+    indicator.hide_loading()
+    app.processEvents()
+    assert not indicator._spin.isActive()  # noqa: SLF001
+    assert not indicator._follow.isActive()  # noqa: SLF001
+    print("скрытый индикатор: таймеры остановлены")
+
     inline = InlineLoading()
     inline.set_loading(True)
     app.processEvents()
